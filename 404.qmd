@@ -1,0 +1,5 @@
+---
+title: "Page not found"
+---
+
+That page doesn't exist, or it moved. Try the [home page](/index.html) or the [projects](/projects.html).

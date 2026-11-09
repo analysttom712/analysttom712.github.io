@@ -1,0 +1,215 @@
+// FP&A variance and forecast: all DAX measures
+// Thomas Baynum · Power BI on Microsoft's AdventureWorksDW sample data
+// Exported from Power BI Desktop (DAX query view → Define all measures in this model).
+// Paste into DAX query view and select Run to see every measure evaluated.
+//
+// Question 1: budget versus actual, comparable actuals, run rate forecast
+// Question 2: revenue, expenditures, net operating result and expenditure mix
+// Question 4: margins, liquidity ratios and turnover (balances as of November)
+// Tables are named for the question each was first built for; the report page "Question 3,4,5" uses measures from several of them.
+// Ratios: net profit margin
+// Query: the data table every measure reads from (no measures of its own)
+
+DEFINE
+    MEASURE 'Question 1'[Actual Amount] = CALCULATE(
+    SUM(Query[TotalAmount]),
+    Query[ScenarioName] = "Actual")
+    MEASURE 'Question 1'[Budget Amount] = CALCULATE(
+    SUM(Query[TotalAmount]),
+    Query[ScenarioName] = "Budget")
+    MEASURE 'Question 1'[Variance] = [Comparable Actual] - [Budget Amount]
+    MEASURE 'Question 1'[Variance%] = DIVIDE([Variance],[Budget Amount],Blank())
+    MEASURE 'Question 1'[Two Years Prior Actual] = VAR CurrentYear = MAX(Query[FinanceYear])
+RETURN
+CALCULATE(
+    [Actual Amount],
+    Query[FinanceYear] = CurrentYear - 2
+)
+    MEASURE 'Question 1'[YoY Growth %] = DIVIDE(
+[Actual Amount] - [Prior Year Actual],
+[Prior Year Actual],
+0
+)
+    MEASURE 'Question 1'[Forecast Amount] = IF(
+    ISBLANK([Two Years Prior Actual]),
+    BLANK(),
+    [Prior Year Actual] + [Prior Year Change]
+)
+    MEASURE 'Question 1'[Prior Year Change] = [Prior Year Actual] - [Two Years Prior Actual]
+    MEASURE 'Question 1'[Prior Year Actual] = VAR CurrentYear = MAX(Query[FinanceYear])
+RETURN
+CALCULATE(
+    [Actual Amount],
+    Query[FinanceYear] = CurrentYear - 1
+)
+    MEASURE 'Question 1'[Comparable Actual] = SUMX(
+    VALUES(Query[FinanceYear]),
+    IF(NOT ISBLANK([Budget Amount]), [Actual Amount])
+)
+    MEASURE 'Question 1'[Original Variance] = [Actual Amount] - [Budget Amount]
+    MEASURE 'Question 1'[Original Variance%] = DIVIDE([Original Variance],[Budget Amount],Blank())
+    MEASURE 'Question 1'[Forecast Error %] = VAR f = [Forecast Amount]
+RETURN
+    IF(
+        f = 0,
+        BLANK(),
+        DIVIDE(f - [Actual Amount], [Actual Amount])
+    )
+    MEASURE 'Question 1'[Generated Budget] = VAR PriorActual = [Prior Year Actual]
+VAR GrowthRate = 0.10
+RETURN
+    IF(
+        PriorActual = 0,
+        BLANK(),
+        PriorActual * (1 + GrowthRate)
+    )
+    MEASURE 'Question 2'[Revenue] = CALCULATE(
+    SUM(Query[TotalAmount]),
+    Query[ScenarioName] = "Actual", Query[AccountType] = "Revenue")
+    MEASURE 'Question 2'[Expenditures] = CALCULATE(
+    SUM(Query[TotalAmount]),
+    Query[ScenarioName] = "Actual", Query[AccountType] = "Expenditures")
+    MEASURE 'Question 2'[Net operating result] = [Revenue] - [Expenditures]
+    MEASURE 'Question 2'[Prior Year Net operating result] = VAR CurrentYear = MAX(Query[FinanceYear])
+RETURN
+IF(
+    HASONEVALUE(Query[FinanceYear]),
+    CALCULATE(
+        [Net operating result],
+        FILTER(
+            ALLSELECTED(Query[FinanceYear]),
+            Query[FinanceYear] = CurrentYear - 1
+        )
+    )
+)
+    MEASURE 'Question 2'[Change in Net operating result] = IF(
+    ISBLANK([Prior Year Net operating result]),
+    BLANK(),
+    [Net operating result] - [Prior Year Net operating result]
+)
+    MEASURE 'Question 2'[Net operating result of Revenue] = DIVIDE([Net operating result], [Revenue])
+    MEASURE 'Question 2'[Expenditure Share %] = DIVIDE(
+    [Expenditures],
+    CALCULATE(
+        [Expenditures],
+        ALL(Query[AccountDescription]),
+        ALL(Query[Expenditure Group])
+    )
+)
+    MEASURE 'Question 2'[Revenue Share %] = DIVIDE(
+    [Revenue],
+    CALCULATE([Revenue], ALL(Query[AccountDescription]))
+)
+    MEASURE 'Question 4'[Standard Cost of Sales] = CALCULATE(
+    SUM(Query[TotalAmount]),
+    Query[AccountDescription] = "Standard Cost of Sales",
+    Query[ScenarioName] = "Actual"
+)
+    MEASURE 'Question 4'[Gross Profit Margin %] = DIVIDE(
+    [Revenue] - [Standard Cost of Sales],
+    [Revenue]
+)
+    MEASURE 'Question 4'[Nov Balance] = CALCULATE(
+    SUM(Query[TotalAmount]),
+    Query[MonthNum] = 11,
+    Query[ScenarioName] = "Actual"
+)
+    MEASURE 'Question 4'[Current Assets] = CALCULATE(
+    [Nov Balance],
+    Query[AccountDescription] IN {
+        "Cash",
+        "Trade Receivables",
+        "Other Receivables",
+        "Finished Goods",
+        "Raw Materials",
+        "Work in Process",
+        "Prepaid Expenses",
+        "Intercompany Receivables"
+    }
+)
+    MEASURE 'Question 4'[Current Liabilities] = CALCULATE(
+    [Nov Balance],
+    Query[AccountDescription] IN {
+        "Accounts Payable",
+        "Other Current Liabilities",
+        "Current Installments of Long-term Debt",
+        "Notes Payable",
+        "Intercompany Payables"
+    }
+)
+    MEASURE 'Question 4'[Quick Assets] = CALCULATE(
+    [Nov Balance],
+    Query[AccountDescription] IN {
+        "Cash",
+        "Trade Receivables",
+        "Other Receivables"
+    }
+)
+    MEASURE 'Question 4'[Inventory Balance] = CALCULATE(
+    [Nov Balance],
+    Query[AccountDescription] IN {
+        "Finished Goods",
+        "Raw Materials",
+        "Work in Process"
+    }
+)
+    MEASURE 'Question 4'[Trade Receivables Balance] = CALCULATE(
+    [Nov Balance],
+    Query[AccountDescription] = "Trade Receivables"
+)
+    MEASURE 'Question 4'[Current Ratio] = DIVIDE(
+    [Current Assets],
+    [Current Liabilities]
+)
+    MEASURE 'Question 4'[Quick Ratio] = DIVIDE(
+    [Quick Assets],
+    [Current Liabilities]
+)
+    MEASURE 'Question 4'[Receivables Turnover] = DIVIDE(
+    [Revenue],
+    [Trade Receivables Balance]
+)
+    MEASURE 'Question 4'[Inventory Turnover] = DIVIDE(
+    [Standard Cost of Sales],
+    [Inventory Balance]
+)
+    MEASURE 'Ratios'[Net Profit Margin %] = DIVIDE([Net operating result], [Revenue])
+
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Actual Amount", [Actual Amount],
+        "Budget Amount", [Budget Amount],
+        "Variance", [Variance],
+        "Variance%", [Variance%],
+        "Two Years Prior Actual", [Two Years Prior Actual],
+        "YoY Growth %", [YoY Growth %],
+        "Forecast Amount", [Forecast Amount],
+        "Prior Year Change", [Prior Year Change],
+        "Prior Year Actual", [Prior Year Actual],
+        "Comparable Actual", [Comparable Actual],
+        "Original Variance", [Original Variance],
+        "Original Variance%", [Original Variance%],
+        "Forecast Error %", [Forecast Error %],
+        "Generated Budget", [Generated Budget],
+        "Revenue", [Revenue],
+        "Expenditures", [Expenditures],
+        "Net operating result", [Net operating result],
+        "Prior Year Net operating result", [Prior Year Net operating result],
+        "Change in Net operating result", [Change in Net operating result],
+        "Net operating result of Revenue", [Net operating result of Revenue],
+        "Expenditure Share %", [Expenditure Share %],
+        "Revenue Share %", [Revenue Share %],
+        "Standard Cost of Sales", [Standard Cost of Sales],
+        "Gross Profit Margin %", [Gross Profit Margin %],
+        "Nov Balance", [Nov Balance],
+        "Current Assets", [Current Assets],
+        "Current Liabilities", [Current Liabilities],
+        "Quick Assets", [Quick Assets],
+        "Inventory Balance", [Inventory Balance],
+        "Trade Receivables Balance", [Trade Receivables Balance],
+        "Current Ratio", [Current Ratio],
+        "Quick Ratio", [Quick Ratio],
+        "Receivables Turnover", [Receivables Turnover],
+        "Inventory Turnover", [Inventory Turnover],
+        "Net Profit Margin %", [Net Profit Margin %]
+    )

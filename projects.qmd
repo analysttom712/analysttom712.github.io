@@ -1,0 +1,35 @@
+---
+description: "Portfolio projects on synthetic and public sample data: reconciliation in Power BI, Python and SQL, FP&A variance, AI operations and AI guardrails."
+title: "Projects"
+---
+
+Every project uses synthetic data or public sample data. Where a project mirrors work I do on the job, the data is invented so that no employer or member information appears.
+
+## All projects
+
+::: {.cards}
+::: {.card-p}
+### [Benefits receivables reconciliation](projects/benefits-ledger.qmd)
+Billing, three payment channels, a payment log and the ledger, tied out monthly, with every difference given a cause. The same reconciliation is rebuilt in Python and SQL from the vendor PDFs, with matching by SSN last 4 and 13 automated checks.
+
+[Power BI]{.tag} [DAX]{.tag} [Python]{.tag} [SQL]{.tag}
+:::
+::: {.card-p}
+### [AI operations and enablement](projects/ai-operations.qmd)
+How I run AI agents as a team: one job per agent, read-only reviewers, four gates before anything goes public, and a decision log of what they caught.
+
+[AI operations]{.tag} [Governance]{.tag} [Review gates]{.tag}
+:::
+::: {.card-p}
+### [FP&A variance and forecast](projects/fpa-variance.qmd)
+Actual versus budget and a run rate forecast on Microsoft's AdventureWorks sample.
+
+[SQL Server]{.tag} [Power BI]{.tag} [DAX]{.tag}
+:::
+::: {.card-p}
+### [Using AI with guardrails](projects/ai-guardrails.qmd)
+How I set rules for AI tools at my own small company, and what happened when one slipped.
+
+[AI governance]{.tag} [Change control]{.tag}
+:::
+:::

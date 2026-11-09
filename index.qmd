@@ -1,0 +1,61 @@
+---
+description: "Thomas Baynum, data analyst with an accounting background: reconciliations, Power BI and clean, explainable numbers."
+title: "Thomas Baynum"
+pagetitle: "Data analyst"
+open-graph:
+  title: "Thomas Baynum · Data analyst"
+twitter-card:
+  title: "Thomas Baynum · Data analyst"
+page-layout: article
+title-block-banner: false
+---
+
+::: {.lede}
+I make the numbers agree, and I show where they don't.
+:::
+
+::: {.sub}
+Data analyst · reconciliation, Power BI, Power Query and enterprise BI reporting · Columbia, SC area
+:::
+
+::: {.kpis}
+::: {.kpi}
+**5+ days → 3 hours**
+[a monthly reconciliation, rebuilt in Power BI]{.k}
+:::
+::: {.kpi}
+**35 DAX measures**
+[published, with the errors I caught]{.k}
+:::
+::: {.kpi}
+**Accounting first**
+[GAAP, monthly close, payables, ledger tie-outs]{.k}
+:::
+:::
+
+## Selected work
+
+::: {.cards}
+::: {.card-p}
+### [Benefits receivables reconciliation](projects/benefits-ledger.qmd)
+Billing, payments and the ledger tied out monthly, with every difference given a cause. Then checked again in Python and SQL, starting from vendor PDFs.
+
+[Power BI]{.tag} [DAX]{.tag} [Python]{.tag} [SQL]{.tag}
+:::
+::: {.card-p}
+### [AI operations and enablement](projects/ai-operations.qmd)
+A team of AI agents run with roles, written rules and review gates, and a decision log showing 14 catches before anything went public.
+
+[AI operations]{.tag} [Governance]{.tag} [Review gates]{.tag}
+:::
+::: {.card-p}
+### [FP&A variance and forecast](projects/fpa-variance.qmd)
+Budget versus actual on public sample data, including the mistakes I caught.
+
+[SQL Server]{.tag} [Power BI]{.tag} [DAX]{.tag}
+:::
+:::
+
+::: {.origin}
+**Where it started:** a year of payroll files that never lined up, until I made them match in Power Query. [Read how it started](about.qmd#where-it-started)
+:::

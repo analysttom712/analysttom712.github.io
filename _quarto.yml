@@ -1,0 +1,45 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - code/
+
+website:
+  title: "Thomas Baynum"
+  site-url: "https://analysttom712.github.io"
+  description: "Data analyst: reconciliation, Power BI, Power Query and enterprise BI reporting."
+  favicon: images/thomas-baynum.jpg
+  image: images/thomas-baynum.jpg
+  open-graph: true
+  twitter-card: true
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: projects.qmd
+        text: Projects
+      - href: about.qmd
+        text: About
+      - href: resume.qmd
+        text: Resume
+      - href: contact.qmd
+        text: Contact
+    right:
+      - icon: linkedin
+        href: https://www.linkedin.com/in/thomas-baynumacct
+        aria-label: LinkedIn
+      - icon: github
+        href: https://github.com/analysttom712
+        aria-label: GitHub
+  page-footer:
+    center: "Projects use synthetic or public sample data."
+
+format:
+  html:
+    theme:
+      light: [cosmo, ledger.scss]
+      dark: [cosmo, ledger-dark.scss]
+    toc: false
+    smooth-scroll: true
+    link-external-newwindow: true
+    include-after-body: callout-keyboard.html

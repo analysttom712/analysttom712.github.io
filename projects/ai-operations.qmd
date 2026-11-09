@@ -1,0 +1,90 @@
+---
+description: "How I run AI agents as a team: defined roles, written rules, review gates and a decision log that shows the rules working."
+title: "AI operations and enablement"
+subtitle: "Governance for a team of AI agents: written rules, review gates and a decision log"
+---
+
+## Problem
+
+AI can build a lot fast: synthetic data, a Power BI model, Python, SQL, a website. The risk is in what it builds without being told: a real report's layout copied too closely, a personal file path left in a public repo, an old commit that still holds something you meant to remove. None of that is a code problem. It's an operations problem: who does what, under which rules, and what has to pass before anything goes out.
+
+I ran my portfolio work this way. AI agents did the building and reviewing. I set the rules and the gates, and nothing went public without my yes.
+
+## The operating model
+
+**Roles.** Each agent has one job and only the tools that job needs. Reviewers can read; they can't edit, publish or delete.
+
+| Agent | Job | Can't |
+|---|---|---|
+| Builder (main session) | Writes the data, code and pages, and runs the checks | Publish, push, change settings or accept terms without my yes |
+| Employer risk panel | Reads everything as my employer's HR, compliance and external auditors would | Edit or publish |
+| Readiness reviewers | A resume reviewer, a senior recruiter, a hiring manager and a web developer: is the portfolio ready to show? | Edit or publish |
+| Brand reviewer (company work) | Weekly and pre-publish scorecard for my company's site and content | Edit or publish |
+
+**Rules.** Written down once, loaded into every session, and applied the same way every time. A few of them:
+
+- Synthetic data only. No real names, IDs, amounts, report names or report layouts.
+- Nothing goes public (a push, a publish, a repo made public) without my explicit yes.
+- Disclose AI-written work in one consistent sentence.
+- Never invent a credential, a title, a tool or a result. Mark anything unconfirmed and ask.
+- No personal paths, personal email or account names in anything public.
+- Keep portfolio work and day-job work separate.
+
+**Gates.** Every public piece passes the same four gates, in order:
+
+1. **Automated checks.** The work proves itself first: 13 checks against an answer key, footer totals on every file, a search for banned terms and personal paths.
+2. **Readiness review.** The resume reviewer, senior recruiter, hiring manager and web developer decide whether the work is good enough to show.
+3. **Risk review.** Once the work is ready, the employer risk panel takes over, and it gets the most use. When it disagrees with the readiness reviewers, the two sides work out one joint plan for what's actually okay to show, and I decide anything that's my call.
+4. **My approval.** Then, and only then, it's pushed or published.
+
+**Enforcement.** The rules that matter most are enforced by a tool, not a reminder: a hook checks every git command before it runs and blocks careless ones, and deletes must name their paths exactly. Commits go out under a no-reply address, never a personal email.
+
+## Decision log: what the rules caught
+
+**14 issues caught before going public. 0 pushes or publishes without my yes. At least 6 review rounds, all in one working day (November 9, 2026).**
+
+Each entry is a rule, what happened, and what was done. It never says what the real thing looked like, only that the rule held.
+
+### Four catches that show the gates working
+
+- **Nothing public without my yes.** The site was ready to publish. *Held at Gate 4:* "Let me look first" stopped the publish.
+- **Reviewers advise; I decide.** A reviewer asked whether some counts and titles were too realistic. *Not changed on the reviewer's word:* I confirmed they were invented, then the work went ahead.
+- **Disclose AI work the same way everywhere.** One page said AI "helped" with code that another said AI "wrote". *Fixed:* one sentence now used everywhere: AI wrote the code at my direction; I set the rules and checks and reviewed every result.
+- **No old history goes public.** Earlier commits still held old surnames and an old description. *Fixed:* the repo was deleted and recreated with one clean commit. A force-push wasn't enough, because old commits stay reachable.
+
+::: {.callout-note collapse="true" appearance="simple"}
+## See all 14 catches (full log)
+
+1. **Never mirror a real report's layout.** Two synthetic vendor PDFs came out looking more like real-world reports than the rule allows. *Caught by the employer risk panel.* Both changed to a plain generic layout before anything went public.
+2. **Synthetic volumes stay away from real ones.** One synthetic file's size was flagged as possibly too realistic. *Caught by the employer risk panel.* Regenerated at a deliberately different size; every result rechecked.
+3. **No regional or identifying patterns.** The made-up surnames came from too narrow a pool. *Caught by the employer risk panel.* Replaced with a nationwide list; same random draws, so only the names changed.
+4. **Keep public notes vendor-neutral.** A database note named one vendor's product. *Caught by the employer risk panel.* Removed; the note now says "other databases have their own versions".
+5. **No personal paths in public files.** A private script was copied over the repo's version, bringing my local folder path with it. *Caught by the builder's own diff check, before commit.* Restored the repo version from git.
+6. **No personal paths in public files.** Rebuilding a model file wrote my local path into a setting. *Caught by the builder's search for my username, before commit.* Restored, and the script changed so it always writes a placeholder.
+7. **No old history goes public.** Earlier commits still held the old surnames and an old description. *Caught by joint review before going public.* Repo deleted and recreated with one clean commit; a force-push wasn't enough, since old commits stay reachable.
+8. **Commits use a no-reply address.** The repo's git settings held a personal email. *Caught by the builder, before commit.* Commit made under the no-reply address.
+9. **Disclose AI work the same way everywhere.** One page said AI "helped" with code that another said AI "wrote". *Caught by the employer risk panel.* One sentence used everywhere.
+10. **Nothing reads as a statement about an employer's controls.** Two scenario descriptions could be read as real process failures. *Caught by the employer risk panel.* Rewritten as clearly planted scenario events.
+11. **Protect file integrity.** Git was about to rewrite line endings inside the PDFs, which can corrupt them. *Caught by the builder, from git's own warning.* PDFs, spreadsheets and images marked as binary before the commit.
+12. **Stay in the right account.** The command-line tool was signed in to a different account, so a push failed. *Caught by the failed push.* Switched to my own account, which I then told it to keep.
+13. **Reviewers advise; I decide.** A reviewer asked whether some counts and titles were too realistic. *Caught by the employer risk panel.* Not changed on the reviewer's word. I confirmed they were invented, then it went ahead.
+14. **Nothing public without my yes.** The site was ready to publish. *Caught at Gate 4.* Held: "Let me look first" stopped the publish.
+:::
+
+## The company chapter
+
+The same approach runs at the two-person company I co-founded: a written AI policy that went through four versions in its first week, least access for the AI in the cloud, change control through a test site, and one real incident contained and recorded in under an hour. [Read that chapter →](ai-guardrails.qmd#where-it-comes-from)
+
+## What I'd tell a team rolling out AI
+
+- **Write the rules before you switch the agent on,** and load them into every session, so nobody has to remember them.
+- **One job per agent.** Give reviewers read-only access: they should never be able to fix what they're judging.
+- **Enforce the rules that matter most with a tool,** not a reminder.
+- **Keep a decision log.** It's the evidence that the rules work, and it shows what to tighten next.
+- **A person approves anything that goes out.** Advice from an agent is input, not approval.
+
+## Tools
+
+Claude (agents, hooks, memory) · Git and GitHub · Python · Quarto
+
+[← All projects](../projects.qmd)

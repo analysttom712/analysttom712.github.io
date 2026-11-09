@@ -1,0 +1,27 @@
+---
+description: "From trucking and restaurants to payables and benefits: every job came down to making the numbers agree."
+title: "About"
+---
+
+![](images/thomas-baynum.jpg){.headshot fig-alt="Thomas Baynum, smiling, in a navy striped polo shirt against a plain wall."}
+
+Every job I've had came down to making the numbers agree. Route logs and hours of service rules as a CDL Class A driver. Nightly cash and card batches as a restaurant assistant general manager. An average of 800 or more invoices a month as an accountant at a state agency. Now I handle payroll deductions and benefit premiums on a benefits team, and between pay cycles I've built Power BI and Power Query tools that do the matching and show exactly where a variance came from.
+
+I like to know how a system works, not just what it outputs: when the cash arrives, when a change is keyed, when it posts and when each report runs. Most "errors" turn out to be timing, and knowing which is which is the job.
+
+I'm open to **data analyst** roles, with a growing interest in **AI operations and enablement**: anywhere reconciliation, reporting, clean data and the careful use of AI matter.
+
+## Where it started
+
+There was no set process for pulling a year of payroll data together for 401(k) testing. Then I discovered Power Query, and realized it would work if every pay period's file matched: same tables, same sheet names, clean data. So I made them match, then appended and pivoted a full year into one table. That's when I knew I wanted to do this for a living.
+
+## Education
+
+![](images/thomas-baynum-graduation.jpg){.gradshot fig-alt="Thomas Baynum smiling in a Midlands Technical College cap and gown."}
+
+- AAS in Accounting, Midlands Technical College, 2026
+- Phi Theta Kappa Honor Society, member since 2022
+- Coursework in data science (R), payroll, and business taxation
+- Intro and Intermediate SQL, DataCamp, January 2026
+- Student member, National Association of Certified Public Bookkeepers (NACPB), 2022 to present
+- QuickBooks Online Certified ProAdvisor

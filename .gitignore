@@ -1,0 +1,9 @@
+/_site/
+/.quarto/
+*_files/
+
+**/*.quarto_ipynb
+/.claude/
+
+# Parked drafts stay local, never in the public repo
+projects/_*.qmd

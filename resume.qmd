@@ -1,0 +1,12 @@
+---
+description: "Download Thomas Baynum's one-page resume."
+title: "Resume"
+---
+
+[Download my resume (PDF)](Thomas-Baynum-Resume.pdf){.btn .btn-outline-primary}
+
+**In short:** data analyst with an accounting background. I build reconciliation and reporting tools in Power BI and Power Query for my benefits team, and I treat the data behind them as confidential. One page, updated November 2026.
+
+::: {.callout-note appearance="simple"}
+**This is the public version.** Some details, such as the specific systems I use at work, are left out. If you'd like the full resume and haven't already received it with an application to your company, please [reach out on LinkedIn](https://www.linkedin.com/in/thomas-baynumacct).
+:::

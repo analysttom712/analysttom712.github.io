@@ -1,0 +1,211 @@
+---
+description: "A benefits receivables reconciliation in Power BI, then again in Python and SQL, on synthetic data: every difference gets a cause and a next step."
+title: "Benefits receivables reconciliation"
+subtitle: "Cut a monthly reconciliation from 5+ business days to about 3 hours at work. Shown here on a synthetic scenario in Power BI, then checked in Python and SQL"
+lightbox: true
+---
+
+## Problem
+
+A benefits receivables reconciliation checks that what was billed to retirees and former employees matches what they paid and what reached the general ledger. In this scenario the numbers come from seven reports that rarely agree on the first try. Usually it's timing: a payment arrives one day and posts days later, or a death is reported months after it happened.
+
+At work, a Power BI model I built cut a reconciliation like this from 5+ business days to about 3 hours. This page rebuilds the problem on made-up data, so I can show how it works. Claude (AI) wrote the Python, SQL and DAX at my direction; I set the vendor formats, matching rules and checks, and reviewed every result.
+
+## Data
+
+All synthetic: made-up people, IDs and amounts, generated to my specification with AI assistance. Twelve monthly files from each report:
+
+| Report | Where it comes from | What it holds |
+|---|---|---|
+| Worker list | HR system | People, region, division, dates of birth and death |
+| Premium billing | HR system | What each person was billed each month |
+| Vendor 1, Vendor 2 | The vendors | What each vendor drafted and deposited |
+| Internal ACH | In-house drafts | What was drafted directly |
+| Payment log | Spreadsheet log | Checks, off-cycle payments, returns and refunds |
+| Ledger detail | Reporting system | What posted to the ledger, person by person |
+| Ledger postings | Accounting | The bulk entries: billing, deposits, checks and adjustments |
+
+*In a setup like this, vendor reports often arrive as PDFs. The Power BI version starts from cleaned tables; the Python and SQL version below starts from the PDFs.*
+
+Every problem here is planted in this exercise, with a known answer key: late-reported deaths, Medicare and age-out changes posted late, vendor drafts taken after a removal, misposted deposits, payments that post after month-end, premiums missing from the ledger because costing wasn't keyed, and retro cancellations nobody reversed.
+
+## Approach
+
+1. Combined each report's monthly files in Power Query and built a star schema: dimensions for person, month and account; facts for billing, receipts, the payment log and the ledger.
+2. Matched every person and month across all sources, so someone missing from one side still shows up.
+3. Designed matching rules that give each difference one cause and a next step, most specific first.
+4. Tied the ledger out to every source: a roll-forward (opening + activity = ending), billing against the ledger detail and the billing report, each payment channel's deposit against its report (vendors matched by draft month), and checks against the payment log.
+5. Made it easy to use: a start page, tips on every page, and a subheader that always says which filters are on.
+
+![Exceptions on synthetic data: 157 person-months grouped by cause, each with a next step on the report page. Amounts are paid minus billed: parentheses mean underpaid, a plus means collected and owed back. Costing not keyed shows $0.00 because the person paid; the gap is on the ledger side.](../images/recon-exceptions.jpg){fig-alt="Table of exception causes with counts and amounts: costing not keyed 51, billed after death 45, retro-canceled not adjusted 27, drafted after removal 18, returned draft 8, missed payment 6, drafted in error 1, short or unpaid 1; total 157."}
+
+## Results
+
+| What I checked | Result |
+|---|---|
+| Planted problems | All 12 kinds in the answer key surfaced, with no false alarms |
+| Person-months flagged for action | 157, each with a cause and a next step |
+| Retiree account | ($500.00) opening to $2,000.00 ending, explained item by item |
+| Reconciliation time (the work version) | 5+ business days → about 3 hours |
+
+![Six tie-outs to the general ledger, synthetic data. $0.00 means two sources agree. Detail vs billing is billing that never reached the ledger; checks vs log is timing that clears the next month; the year's ($960.00) is checks received in late December that post in January 2026.](../images/recon-tieouts.jpg){fig-alt="Monthly table comparing billing, ledger detail, three payment channels and the check log against the general ledger for 2025; most cells are $0.00."}
+
+## The same reconciliation in Python and SQL
+
+To check the Power BI answers a second way, I rebuilt the reconciliation from the raw reports in Python and SQL.
+
+1. **Extract.** Python reads the two vendor PDFs (synthetic, printed from the same made-up data in two different layouts). Every file has to match its own footer (record count and total) before it's loaded.
+2. **Match.** In this scenario, neither vendor sends a person number, and both show only the last 4 of the SSN. Lines match on the last 4 plus first and last name, then on the last 4 plus last name to catch a nickname or typo. A line counts only when exactly one person fits; anything else is set aside with the reason, on the load checks report.
+3. **Reshape.** The HR data is stored as date ranges, the way HR systems keep history: 9,344 monthly billing rows become 901 ranges. The load rebuilds each month from the ranges and confirms it equals the original report.
+4. **Report.** Six SQL reports, each one query with a month parameter: roll-forward, tie-outs, exceptions, exceptions by cause, late rate changes, and load and data quality checks.
+
+| Check | Power BI | SQL |
+|---|---|---|
+| Person-months flagged for action | 157 | 157, same count for every cause |
+| Costing gap | $20,783.50 | $20,783.50, same 51 person-months as the answer key |
+| December check cutoff | ($960.00) | ($960.00) |
+| Retiree account | ($500.00) to $2,000.00 | ($500.00) to $2,000.00 |
+
+All 13 checks pass. It runs in SQLite.
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Show the SQL: the cause rules
+
+I set the causes and their order; the most specific rule has to come first. Trimmed to the rules that fire in this data.
+
+```sql
+classified AS (
+    -- Planted causes, synthetic scenario. Order matters: the first rule that fits wins,
+    -- same as the DAX SWITCH ( TRUE (), ... )
+    SELECT money.*,
+        CASE
+            WHEN report_month > '2025-12-31' THEN 'Prepaid next year'
+            WHEN billed > 0 AND date_of_death IS NOT NULL
+                 AND report_month > date(date_of_death, 'start of month', '+1 month', '-1 day') THEN 'Billed after death'
+            WHEN billed > 0 AND gl_billed = 0 THEN 'Costing not keyed (GL missing)'
+            WHEN billed > 0 AND paid <= 0 AND COALESCE(last_billed_month, '') < '2025-12-01'
+                 AND COALESCE(payment_method, '') <> 'Annual payment' THEN 'Retro-canceled, not adjusted'
+            WHEN billed = 0 AND drafted > 0 THEN 'Drafted after removal'
+            WHEN drafted > 0 AND payment_method = 'Monthly check' THEN 'Drafted in error'
+            WHEN payment_method = 'Annual payment' THEN 'Annual payment (timing)'
+            WHEN returns < 0 AND difference < 0 THEN 'Returned draft'
+            WHEN difference = 0 THEN 'Ties'
+            WHEN ROUND(difference - dependent_life, 2) = 0 THEN 'Dependent life in receipt'
+            WHEN off_cycle > 0 AND difference > 0 THEN 'Off-cycle catch-up'
+            WHEN paid = 0 AND billed > 0 THEN 'Missed payment'
+            WHEN difference < 0 THEN 'Short or unpaid'
+            ELSE 'Review'
+        END AS cause
+```
+
+Full file: [10_views.sql](../code/benefits/10_views.sql)
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Show the SQL: matching vendor lines to people
+
+I set the two tiers and the rule that a line counts only when exactly one person fits. Anything else is kept, with the reason, for the load checks report.
+
+```sql
+WITH candidates AS (
+    SELECT s.rowid AS line_id, p.person_number, 1 AS tier
+    FROM receipt_staging s
+    JOIN person p
+      ON substr(p.ssn, 8, 4) = s.ssn_last4
+     AND upper(p.first_name) = upper(s.first_name)
+     AND upper(p.last_name) = upper(s.last_name)
+    WHERE s.source IN ('Vendor 1', 'Vendor 2')
+    UNION ALL
+    SELECT s.rowid, p.person_number, 2
+    FROM receipt_staging s
+    JOIN person p
+      ON substr(p.ssn, 8, 4) = s.ssn_last4
+     AND upper(p.last_name) = upper(s.last_name)
+    WHERE s.source IN ('Vendor 1', 'Vendor 2')
+),
+best_tier AS (
+    SELECT line_id, MIN(tier) AS tier FROM candidates GROUP BY line_id
+),
+best AS (
+    SELECT c.line_id, c.tier, MIN(c.person_number) AS person_number, COUNT(*) AS candidates
+    FROM candidates c
+    JOIN best_tier b ON b.line_id = c.line_id AND b.tier = c.tier
+    GROUP BY c.line_id, c.tier
+)
+
+-- ...then, in the final SELECT:
+    CASE
+        WHEN s.source = 'Internal ACH' THEN 'Person number'
+        WHEN b.candidates = 1 AND b.tier = 1 THEN 'SSN last 4 + first and last name'
+        WHEN b.candidates = 1 THEN 'SSN last 4 + last name'
+        WHEN b.candidates > 1 THEN 'Unmatched: more than one candidate'
+        ELSE 'Unmatched: no candidate'
+    END AS match_method,
+```
+
+Full file: [02_match_receipts.sql](../code/benefits/02_match_receipts.sql)
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Show the Python: a PDF that fails its own footer isn't loaded
+
+I set the check: every file's record count and total must match the report's own footer.
+
+```python
+def extract(vendor, path):
+    """Returns (rows, check): check says whether the rows agree with the report's own footer."""
+    rows, foot = PARSERS[vendor](path)
+    total = round(sum(r["amount"] for r in rows), 2)
+    check = {"rows": len(rows), "total": total, "footer_rows": foot and foot[1], "footer_total": foot and foot[0]}
+    if foot is None:
+        check["status"] = "FAIL: no footer found"
+    elif foot[1] != len(rows) or round(foot[0], 2) != total:
+        check["status"] = "FAIL: rows or total disagree with the footer"
+    else:
+        check["status"] = "OK"
+    return rows, check
+
+# in load_db.py
+rows, check = extract_vendor_pdfs.extract(vendor, os.path.join(pdf_root, vendor, name))
+log(db, vendor, name, month, check["rows"], check["total"], check["footer_total"], check["status"])
+if check["status"] != "OK":
+    continue                 # a file that fails its own footer is not loaded
+```
+
+Full file: [extract_vendor_pdfs.py](../code/benefits/extract_vendor_pdfs.py)
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Show the SQL: the roll-forward
+
+I set the rule that opening plus every kind of entry in the report must equal ending, to the cent, on every row.
+
+```sql
+running AS (
+    SELECT by_month.*,
+           SUM(total_net) OVER (PARTITION BY account_number ORDER BY report_month) AS ending_balance
+    FROM by_month
+)
+-- ...
+    ROUND((ending_balance - activity) + billing + deposits + checks + off_cycle + returns + refunds
+          + retro_adjustments - ending_balance, 2) AS check_should_be_zero
+```
+
+Full file: [r01_roll_forward.sql](../code/benefits/r01_roll_forward.sql)
+:::
+
+## What I'd tell a team
+
+- Most variances are timing. Label them, and the real errors stand out.
+- One check passing doesn't mean the month ties. Tie out more than one way.
+- Build it so someone else can run it: plain labels, tips on the page, a routine to follow.
+
+## Tools
+
+Excel · Power BI · Power Query · DAX · Python · SQL · SQLite (code written by AI at my direction)
+
+## Repo
+
+[The synthetic data, answer key, Power BI files, Python and SQL on GitHub](https://github.com/analysttom712/benefits-ar-reconciliation)
+
+[← All projects](../projects.qmd)

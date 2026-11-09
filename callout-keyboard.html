@@ -1,0 +1,12 @@
+<script>
+// Collapsed callout headers are clickable divs; make them reachable and usable from the keyboard.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('.callout-header[data-bs-toggle="collapse"]').forEach(function (h) {
+    h.setAttribute("tabindex", "0");
+    h.setAttribute("role", "button");
+    h.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); h.click(); }
+    });
+  });
+});
+</script>

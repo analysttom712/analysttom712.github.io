@@ -1,0 +1,53 @@
+---
+description: "The data controls, approvals and audit trail I put around AI-written code at my two-person company."
+title: "Using AI with guardrails"
+subtitle: "Data controls, approvals and an audit trail for AI-written code at my two-person company"
+---
+
+## Where it comes from
+
+My rules for AI come from my day job, not from AI. Benefits and accounting work runs on confidential data: member records, payroll and health plan information. Protecting it is part of handling benefits data: share only what each person needs, redact the rest, and keep a record of who changed what.
+
+## Problem
+
+In October 2026 I co-founded a small software company that builds recordkeeping software for radiation safety programs. Radiation licenses can run for decades, so the records have to stay complete, documented and readable by federal and state regulators years later.
+
+I don't write the application code; AI tools write it under my direction. That only works with the same discipline I use at work: which tools may touch what, who approves each change, and what happens when the AI gets something wrong.
+
+## What I put in place
+
+- **A written AI policy:** I wrote it and took it through four versions in its first week. Each was approved on a pull request by my co-founder, who reviews the radiation safety content.
+- **One AI tool:** Claude only, with training on our data turned off. No AI on customer records, and a person approves anything before it ships.
+- **Change control:** every change goes to a separate test site first for testing and review. I approve and merge every pull request; the AI writes, but never merges.
+- **Least access for the AI:** in AWS it can deploy and read logs, but it's explicitly denied the database, stored secrets, backup changes and the live API.
+- **Checked by hand:** I confirmed in AWS that multi-factor sign-in, encrypted storage, locked audit logs and backups were on.
+- **Security self-check:** an internal review of our own controls to find gaps early. It's a self-check, not an audit or a certification.
+- **Labeled AI work:** AI-written commits carry an attribution line, so the record shows who wrote what.
+
+## The incident
+
+An AI agent committed two unrelated files to the wrong branch, because its working folder had changed between two commands. It noticed within minutes and reported it unprompted.
+
+1. **Assessed it:** private repository, no customer or personal data, branch not deployed. Minor.
+2. **Decided the response:** keep the history, make sure nothing was exposed, and build a control so it can't happen again.
+3. **Built the control:** a check that blocks risky commands before they run, plus a guard on the repository itself.
+4. **Proved it works:** sample commands run against the check, recorded as test evidence.
+5. **Recorded it:** the same hour, a change-log entry and a new risk-register row.
+
+## Results
+
+Seen, contained, fixed and recorded in under an hour. The control now applies to every session.
+
+## What I'd bring to any team
+
+- **Controls before the agent:** list what an AI tool can touch, and put a guard and a test on each item, before switching it on.
+- **Sandbox first:** let it work on a copy, watch what it touches, then widen access.
+- **Incidents go in the record:** the same day.
+
+## Tools
+
+Claude · GitHub (pull requests, branch history) · a version-controlled compliance log
+
+This is one chapter of a bigger picture: [AI operations and enablement](ai-operations.qmd), how I run AI agents with roles, rules and review gates.
+
+[← All projects](../projects.qmd)

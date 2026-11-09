@@ -1,0 +1,63 @@
+/*-- scss:defaults --*/
+$body-bg: #1C1D1A;
+$body-color: #E8E6DF;
+$primary: #7FC2A0;
+$link-color: #7FC2A0;
+$navbar-bg: #1C1D1A;
+$navbar-fg: #E8E6DF;
+$footer-bg: #1C1D1A;
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+$headings-font-family: "Source Serif 4", Georgia, serif;
+$headings-font-weight: 500;
+$border-color: #3A3B36;
+
+/*-- scss:rules --*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Source+Serif+4:wght@400;500&display=swap');
+.navbar { border-bottom: 1px solid $border-color; }
+.lede { font-family: $headings-font-family; font-size: 1.9rem; line-height: 1.25; margin: 1.5rem 0 .25rem; }
+.sub { color: #B4B2A9; margin-bottom: 1.5rem; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .75rem; margin: 1rem 0 2rem; }
+.kpi { background: #272824; border-radius: 8px; padding: .9rem 1rem; }
+.kpi strong, .kpi b { display: block; font-size: 1.35rem; font-weight: 500; color: $primary; }
+.kpi span { font-size: .85rem; color: #B4B2A9; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .9rem; margin: 1rem 0; }
+.card-p { border: 1px solid $border-color; border-radius: 8px; padding: 1rem; background: #232420; }
+.card-p a { text-decoration: none; }
+.card-p h3 { font-size: 1.1rem; margin: 0 0 .25rem; }
+.card-p p { font-size: .9rem; color: #B4B2A9; margin: 0 0 .5rem; }
+.tag { display: inline-block; font-size: .75rem; padding: 2px 8px; border-radius: 6px; background: #1F3A2C; color: #BFE3CF; margin: 0 4px 4px 0; }
+.origin { border-left: 3px solid $primary; padding: .5rem 1rem; color: #B4B2A9; margin: 1.5rem 0; }
+.todo { background: #3A3220; border: 1px dashed #C9A23A; padding: .4rem .7rem; border-radius: 6px; font-size: .9rem; }
+table { font-size: .95rem; }
+.headshot { float: right; width: 200px; max-width: 40%; margin: 0 0 1rem 1.5rem; border-radius: 12px; }
+@media (max-width: 576px) { .headshot { float: none; display: block; margin: 0 auto 1rem; width: 180px; max-width: 60%; } }
+.gradshot { float: right; width: 170px; max-width: 35%; margin: 0 0 1rem 1.5rem; border-radius: 12px; }
+@media (max-width: 576px) { .gradshot { float: none; display: block; margin: 0 auto 1rem; width: 180px; max-width: 60%; } }
+
+/* Page descriptions are for link previews; keep them off the page itself */
+.quarto-title-block .description, .quarto-title .description { display: none; }
+
+/* Collapsed callouts (code and the full decision log) */
+.callout.callout-style-simple .callout-header { font-weight: 600; cursor: pointer; }
+.callout.callout-style-simple .callout-header:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.callout.callout-style-simple .callout-body ol { padding-left: 1.4rem; margin-bottom: .25rem; }
+.callout.callout-style-simple .callout-body li { margin-bottom: .6rem; }
+@media print { .callout .collapse { display: block !important; height: auto !important; } }
+
+/* Jump-link landing: when a link takes you to a section, it glows briefly so you know where to look */
+section[id], [id].origin { scroll-margin-top: 5rem; }
+:target {
+  border-radius: 10px;
+  padding: .4rem .9rem .1rem;
+  margin-left: -.9rem;
+  margin-right: -.9rem;
+  animation: target-glow 2.4s ease-out 1;
+}
+@keyframes target-glow {
+  0%   { box-shadow: 0 0 0 6px rgba($primary, .45); background-color: rgba($primary, .10); }
+  60%  { box-shadow: 0 0 0 6px rgba($primary, .25); background-color: rgba($primary, .06); }
+  100% { box-shadow: 0 0 0 6px rgba($primary, 0);   background-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :target { animation: none; box-shadow: inset 4px 0 0 $primary; }
+}
