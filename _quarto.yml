@@ -4,6 +4,7 @@ project:
   resources:
     - code/
     - cat/
+    - dealer-pack/
 
 website:
   title: "Thomas Baynum"

@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Dealer Financial Pack</title>
+<meta name="description" content="Sample monthly financial pack for a fictional equipment dealer: budget vs actual, forecast, KPIs, sensitivity and checks. Made-up data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#FBFAF6; --surface:#FFFFFF; --soft:#F1EFE8; --ink:#22231F; --muted:#5E5D57; --line:#E3E0D6;
+  --accent:#2F6B4F; --accent-soft:#E4EFE7; --budget:#8A8676; --forecast:#9DBCAA;
+  --good:#2F6B4F; --bad:#A2412F; --bad-soft:#F6E3DE; --warn-soft:#FFF6DD; --warn:#8A6A12;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#181915; --surface:#21231E; --soft:#2A2C26; --ink:#ECEAE2; --muted:#A9A69B; --line:#3A3C35;
+    --accent:#7FBF9C; --accent-soft:#24382C; --budget:#A9A69B; --forecast:#4E7A61;
+    --good:#7FBF9C; --bad:#E59A88; --bad-soft:#3C2620; --warn-soft:#3A3220; --warn:#E3C46E;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#181915; --surface:#21231E; --soft:#2A2C26; --ink:#ECEAE2; --muted:#A9A69B; --line:#3A3C35;
+  --accent:#7FBF9C; --accent-soft:#24382C; --budget:#A9A69B; --forecast:#4E7A61;
+  --good:#7FBF9C; --bad:#E59A88; --bad-soft:#3C2620; --warn-soft:#3A3220; --warn:#E3C46E;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 48px}
+.top{border-bottom:1px solid var(--line);padding:12px 0;margin-bottom:8px}
+.top a{color:var(--accent);text-decoration:none;font-weight:500}
+h1,h2{font-family:"Source Serif 4",Georgia,serif;font-weight:500;line-height:1.2}
+h1{font-size:2rem;margin:1.2rem 0 .3rem}
+h2{font-size:1.4rem;margin:2.4rem 0 .4rem}
+.sub{color:var(--muted);margin:0 0 1rem;max-width:760px}
+.banner{background:var(--warn-soft);border:1px dashed var(--warn);color:var(--ink);border-radius:8px;padding:.6rem .9rem;font-size:.9rem;margin:1rem 0}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;align-items:end;background:var(--soft);border-radius:10px;padding:.8rem 1rem;margin:1rem 0;position:sticky;top:0;z-index:5}
+.controls label{font-size:.8rem;color:var(--muted);display:block;margin-bottom:2px}
+select{font:inherit;padding:.35rem .5rem;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{font:inherit;border:0;background:var(--surface);color:var(--ink);padding:.35rem .8rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin:1rem 0}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem}
+.kpi .v{font-size:1.45rem;font-weight:500;color:var(--ink)}
+.kpi .l{font-size:.8rem;color:var(--muted)}
+.kpi .d{font-size:.82rem;margin-top:2px}
+.up{color:var(--good)} .down{color:var(--bad)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1rem;margin:1rem 0}
+.chartbox{position:relative;height:300px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{padding:.45rem .6rem;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);font-size:.8rem}
+tr.total td{font-weight:600;border-top:2px solid var(--ink)}
+.flag{display:inline-block;font-size:.72rem;padding:1px 7px;border-radius:5px;background:var(--bad-soft);color:var(--bad)}
+.ok{display:inline-block;font-size:.72rem;padding:1px 7px;border-radius:5px;background:var(--accent-soft);color:var(--good)}
+ul.notes{margin:.4rem 0 0;padding-left:1.2rem} ul.notes li{margin:.3rem 0}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem}
+.grid2>*{min-width:0}
+@media (max-width:760px){.grid2{grid-template-columns:minmax(0,1fr)} h1{font-size:1.6rem} .controls{position:static}}
+.slider{margin:.7rem 0}
+.slider .row{display:flex;justify-content:space-between;font-size:.9rem}
+.slider output{font-weight:600;color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.result{font-size:1.05rem;background:var(--accent-soft);border-radius:8px;padding:.7rem .9rem;margin-top:.6rem}
+.checks li{list-style:none;margin:.45rem 0;display:flex;gap:.6rem;align-items:baseline}
+.checks{padding:0;margin:0}
+.method{color:var(--muted);font-size:.9rem}
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+button.reset{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:.3rem .7rem;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="https://analysttom712.github.io/">&larr; Thomas Baynum &middot; portfolio</a></div>
+
+  <h1>Monthly financial pack: equipment dealer</h1>
+  <p class="sub">A sample of the reporting I'd build for a budget and forecasting team: budget versus actual by department and region, a year-end forecast, dealer KPIs, a what-if page, data checks and a report catalog.</p>
+  <div class="banner"><strong>Sample data, fictional dealer.</strong> Every number is made up. Not affiliated with any equipment maker or dealer. Actuals run January to October 2026; November and December are forecast.</div>
+
+  <div class="controls" role="group" aria-label="Report filters">
+    <div><label for="month">Month</label><select id="month"></select></div>
+    <div><label for="region">Region</label><select id="region"></select></div>
+    <div><label>View</label><div class="seg" id="view"><button type="button" data-v="month" aria-pressed="true">Month</button><button type="button" data-v="ytd" aria-pressed="false">Year to date</button></div></div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <h2>What changed and why</h2>
+  <div class="card"><ul class="notes" id="notes"></ul></div>
+
+  <h2>Department P&amp;L: budget versus actual</h2>
+  <div class="card tablewrap"><table id="pl"></table>
+    <p class="method" style="margin:.6rem 0 0">Flag: variance over 5% and over $50K either way. Overhead is fixed operating cost (facilities, salaried staff, systems).</p></div>
+
+  <h2>Revenue trend and year-end forecast</h2>
+  <div class="card"><div class="chartbox"><canvas id="trend" aria-label="Monthly revenue: actual, forecast and budget"></canvas></div>
+    <p class="method" style="margin:.6rem 0 0" id="fcnote"></p></div>
+
+  <h2>What-if: 2027 planning scenario</h2>
+  <p class="sub">Starts from the 2026 full year (actual plus forecast) for the selected region. Move a lever to see the effect on gross profit, contribution after overhead and absorption rate.</p>
+  <div class="grid2">
+    <div class="card" id="sliders"></div>
+    <div class="card"><div class="tablewrap"><table id="whatif"></table></div><div class="result" id="whatifText"></div></div>
+  </div>
+
+  <h2>Data checks</h2>
+  <p class="sub">These run every time the page loads. In a real build they compare the report to the general ledger and the dealer business system exports; here those sources are part of the same sample data.</p>
+  <div class="card"><ul class="checks" id="checks"></ul></div>
+
+  <h2>Report catalog</h2>
+  <p class="sub">A starting catalog of the recurring reports, who uses them and when they're due.</p>
+  <div class="card tablewrap"><table id="catalog"></table></div>
+
+  <h2>How it's built</h2>
+  <div class="card method">
+    <ul class="notes">
+      <li><strong>Data:</strong> 12 months &times; 3 regions &times; 4 departments, plus overhead, service hours, rental fleet time and receivables, generated with a fixed seed so the numbers never change between visits.</li>
+      <li><strong>Forecast:</strong> November and December budget &times; each department's year-to-date attainment (actual &divide; budget) in that region. Gross margin uses the year-to-date actual margin.</li>
+      <li><strong>Absorption rate:</strong> (parts gross profit + service gross profit) &divide; overhead. At 100%, parts and service cover the fixed costs before a single machine is sold.</li>
+      <li><strong>Service tech utilization:</strong> billed hours &divide; available hours. <strong>Rental time utilization:</strong> days on rent &divide; days in the fleet. <strong>DSO</strong> (days sales outstanding): receivables &divide; revenue &times; days in the month.</li>
+      <li><strong>Tools:</strong> I normally build this in Power BI with Power Query and DAX. This web version shows the same logic without needing Power BI. Claude (AI) wrote the HTML and JavaScript at my direction; I set the KPIs, formulas, forecast method and checks, and reviewed every result.</li>
+    </ul>
+  </div>
+
+  <footer>Sample data, fictional dealer. &middot; Thomas Baynum &middot; <a href="https://analysttom712.github.io/" style="color:var(--accent)">analysttom712.github.io</a></footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+// ---------- seeded data ----------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+var rnd=mulberry32(20261111);
+function jitter(n){return (rnd()-0.5)*2*n;}
+
+var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var DAYS=[31,28,31,30,31,30,31,31,30,31,30,31];
+var ACT=10; // Jan-Oct actual, Nov-Dec forecast
+var SEASON=[0.85,0.90,1.05,1.10,1.12,1.10,1.00,1.02,1.00,1.00,0.92,0.94];
+var REGIONS=[{k:"Upstate",w:0.42},{k:"Midlands",w:0.36},{k:"Lowcountry",w:0.22}];
+var DEPTS=[
+  {k:"Equipment sales",base:6.0e6,gm:0.115,noise:0.13,drift:-0.035},
+  {k:"Parts",base:2.2e6,gm:0.33,noise:0.05,drift:0.03},
+  {k:"Service",base:1.6e6,gm:0.62,noise:0.06,drift:0.01},
+  {k:"Rental",base:1.1e6,gm:0.44,noise:0.07,drift:0.02}
+];
+var OH_BASE=1.95e6;
+
+var rows=[], oh=[], ops=[];
+REGIONS.forEach(function(r){
+  var regDrift={};
+  DEPTS.forEach(function(d){regDrift[d.k]=d.drift+jitter(0.02);});
+  for(var m=0;m<12;m++){
+    var regRev=0;
+    DEPTS.forEach(function(d){
+      var budRev=d.base*r.w*SEASON[m], budGP=budRev*d.gm;
+      var rev=budRev*(1+regDrift[d.k]+jitter(d.noise));
+      var gp=rev*(d.gm+jitter(0.012));
+      rows.push({m:m,r:r.k,d:d.k,budRev:budRev,budGP:budGP,rev:rev,gp:gp,kind:m<ACT?"A":"F"});
+      regRev+=rev;
+    });
+    var ohBud=OH_BASE*r.w;
+    oh.push({m:m,r:r.k,bud:ohBud,act:ohBud*(1+0.01+jitter(0.03)),kind:m<ACT?"A":"F"});
+    var avail=Math.round(9800*r.w*DAYS[m]/30);
+    var billed=Math.round(avail*(0.81+jitter(0.045)));
+    var fleet=Math.round(180*r.w)*DAYS[m];
+    var onRent=Math.round(fleet*(0.66+jitter(0.06)));
+    var dso=42+jitter(5);
+    ops.push({m:m,r:r.k,avail:avail,billed:billed,fleet:fleet,onRent:onRent,ar:regRev*dso/DAYS[m],rev:regRev});
+  }
+});
+// Forecast: replace Nov-Dec "actuals" with budget x YTD attainment, margin at YTD actual margin
+REGIONS.forEach(function(r){
+  DEPTS.forEach(function(d){
+    var ytd=rows.filter(function(x){return x.r===r.k&&x.d===d.k&&x.m<ACT;});
+    var att=sum(ytd,"rev")/sum(ytd,"budRev"), gm=sum(ytd,"gp")/sum(ytd,"rev");
+    rows.filter(function(x){return x.r===r.k&&x.d===d.k&&x.m>=ACT;}).forEach(function(x){x.rev=x.budRev*att;x.gp=x.rev*gm;});
+  });
+  var ohy=oh.filter(function(x){return x.r===r.k&&x.m<ACT;}), ohAtt=sum(ohy,"act")/sum(ohy,"bud");
+  oh.filter(function(x){return x.r===r.k&&x.m>=ACT;}).forEach(function(x){x.act=x.bud*ohAtt;});
+});
+
+// ---------- helpers ----------
+function sum(a,f){var s=0;for(var i=0;i<a.length;i++)s+=a[i][f];return s;}
+function money(v){var s=v<0?"-":"",a=Math.abs(v);if(a>=1e6)return s+"$"+(a/1e6).toFixed(2)+"M";if(a>=1e3)return s+"$"+Math.round(a/1e3)+"K";return s+"$"+Math.round(a);}
+function smoney(v){return (v>=0?"+":"")+money(v);}
+function pct(v,d){return (v*100).toFixed(d==null?1:d)+"%";}
+function spct(v){return (v>=0?"+":"")+(v*100).toFixed(1)+"%";}
+function el(id){return document.getElementById(id);}
+
+var state={m:ACT-1,region:"All",view:"month"};
+var mSel=el("month"), rSel=el("region");
+for(var i=0;i<ACT;i++){var o=document.createElement("option");o.value=i;o.textContent=MONTHS[i]+" 2026";mSel.appendChild(o);}
+mSel.value=state.m;
+["All"].concat(REGIONS.map(function(r){return r.k;})).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=k==="All"?"All regions":k;rSel.appendChild(o);});
+mSel.onchange=function(){state.m=+mSel.value;render();};
+rSel.onchange=function(){state.region=rSel.value;render();renderWhatIf();renderChart();};
+Array.prototype.forEach.call(document.querySelectorAll("#view button"),function(b){
+  b.onclick=function(){state.view=b.dataset.v;Array.prototype.forEach.call(document.querySelectorAll("#view button"),function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});render();};
+});
+
+function inRegion(x){return state.region==="All"||x.r===state.region;}
+function inPeriod(x){return state.view==="month"?x.m===state.m:x.m<=state.m;}
+function sel(a){return a.filter(function(x){return inRegion(x)&&inPeriod(x);});}
+
+// ---------- KPIs, notes, P&L ----------
+function render(){
+  var R=sel(rows), O=sel(oh), P=sel(ops);
+  var rev=sum(R,"rev"), bud=sum(R,"budRev"), gp=sum(R,"gp"), budGP=sum(R,"budGP");
+  var ohA=sum(O,"act"), ohB=sum(O,"bud");
+  function dept(k,f){return sum(R.filter(function(x){return x.d===k;}),f);}
+  var absA=(dept("Parts","gp")+dept("Service","gp"))/ohA, absB=(dept("Parts","budGP")+dept("Service","budGP"))/ohB;
+  var util=sum(P,"billed")/sum(P,"avail"), rent=sum(P,"onRent")/sum(P,"fleet");
+  var Pm=ops.filter(function(x){return inRegion(x)&&x.m===state.m;});
+  var dso=sum(Pm,"ar")/sum(Pm,"rev")*DAYS[state.m];
+  var k=[
+    ["Revenue",money(rev),spct(rev/bud-1)+" vs budget",rev>=bud],
+    ["Gross margin",pct(gp/rev),((gp/rev-budGP/bud)*100>=0?"+":"")+((gp/rev-budGP/bud)*100).toFixed(1)+" pts vs budget",gp/rev>=budGP/bud],
+    ["Contribution after overhead",money(gp-ohA),smoney((gp-ohA)-(budGP-ohB))+" vs budget",(gp-ohA)>=(budGP-ohB)],
+    ["Absorption rate",pct(absA,0),"budget "+pct(absB,0),absA>=absB],
+    ["Service tech utilization",pct(util,0),"target 82%",util>=0.82],
+    ["Rental time utilization",pct(rent,0),"target 65%",rent>=0.65],
+    ["DSO ("+MONTHS[state.m]+")",dso.toFixed(0)+" days","target 45 days",dso<=45]
+  ];
+  el("kpis").innerHTML=k.map(function(x){return '<div class="kpi"><div class="l">'+x[0]+'</div><div class="v">'+x[1]+'</div><div class="d '+(x[3]?"up":"down")+'">'+(x[3]?"&#9650; ":"&#9660; ")+x[2]+'</div></div>';}).join("");
+
+  // P&L table
+  var lines=DEPTS.map(function(d){var a=dept(d.k,"rev"),b=dept(d.k,"budRev"),g=dept(d.k,"gp"),gb=dept(d.k,"budGP");return {k:d.k,a:a,b:b,g:g,gb:gb};});
+  var h='<thead><tr><th>Department</th><th>Revenue</th><th>Budget</th><th>Variance</th><th>Var %</th><th>Gross profit</th><th>GP budget</th><th>GP variance</th><th>Margin</th><th></th></tr></thead><tbody>';
+  lines.forEach(function(l){
+    var v=l.g-l.gb, vp=l.g/l.gb-1, flag=Math.abs(vp)>0.05&&Math.abs(v)>50000;
+    h+='<tr><td>'+l.k+'</td><td>'+money(l.a)+'</td><td>'+money(l.b)+'</td><td class="'+(l.a>=l.b?"up":"down")+'">'+smoney(l.a-l.b)+'</td><td>'+spct(l.a/l.b-1)+'</td><td>'+money(l.g)+'</td><td>'+money(l.gb)+'</td><td class="'+(v>=0?"up":"down")+'">'+smoney(v)+'</td><td>'+pct(l.g/l.a)+'</td><td>'+(flag?'<span class="flag">Review</span>':'')+'</td></tr>';
+  });
+  h+='<tr class="total"><td>Total</td><td>'+money(rev)+'</td><td>'+money(bud)+'</td><td class="'+(rev>=bud?"up":"down")+'">'+smoney(rev-bud)+'</td><td>'+spct(rev/bud-1)+'</td><td>'+money(gp)+'</td><td>'+money(budGP)+'</td><td class="'+(gp>=budGP?"up":"down")+'">'+smoney(gp-budGP)+'</td><td>'+pct(gp/rev)+'</td><td></td></tr>';
+  var ohv=ohB-ohA, ohflag=Math.abs(ohA/ohB-1)>0.05&&Math.abs(ohv)>50000;
+  h+='<tr><td>Overhead</td><td></td><td></td><td></td><td></td><td>'+money(ohA)+'</td><td>'+money(ohB)+'</td><td class="'+(ohv>=0?"up":"down")+'">'+smoney(ohv)+'</td><td></td><td>'+(ohflag?'<span class="flag">Review</span>':'')+'</td></tr>';
+  h+='<tr class="total"><td>Contribution after overhead</td><td></td><td></td><td></td><td></td><td>'+money(gp-ohA)+'</td><td>'+money(budGP-ohB)+'</td><td class="'+((gp-ohA)>=(budGP-ohB)?"up":"down")+'">'+smoney((gp-ohA)-(budGP-ohB))+'</td><td></td><td></td></tr></tbody>';
+  el("pl").innerHTML=h;
+
+  // Notes: biggest favorable/unfavorable GP variance, absorption, utilization, DSO
+  var sorted=lines.slice().sort(function(a,b){return (a.g-a.gb)-(b.g-b.gb);});
+  var worst=sorted[0], best=sorted[sorted.length-1];
+  var per=(state.view==="month"?MONTHS[state.m]:"Year to date through "+MONTHS[state.m])+(state.region==="All"?"":", "+state.region);
+  var n=[];
+  n.push("<strong>"+per+":</strong> gross profit is "+smoney(gp-budGP)+" against budget ("+spct(gp/budGP-1)+").");
+  if(best.g-best.gb>0)n.push("<strong>Biggest help:</strong> "+best.k+", "+smoney(best.g-best.gb)+" in gross profit"+(best.a>best.b?" on revenue "+spct(best.a/best.b-1)+" over budget.":" from a better margin."));
+  if(worst.g-worst.gb<0)n.push("<strong>Biggest drag:</strong> "+worst.k+", "+smoney(worst.g-worst.gb)+". "+(worst.k==="Equipment sales"?"Machine sales are lumpy; check deals that slipped to next month and margin given up to close.":"Check volume versus price, and any one-time costs."));
+  n.push("<strong>Absorption:</strong> parts and service covered "+pct(absA,0)+" of overhead"+(absA>=1?", so the fixed costs are paid before any machine sale.":". Each point below 100% has to be made up by machine sales and rental."));
+  if(util<0.82)n.push("<strong>Service:</strong> tech utilization of "+pct(util,0)+" is under the 82% target. At the current rate, each point is about "+money(sum(P,"avail")*0.01*145)+" of billable labor (at an example $145 an hour).");
+  if(dso>45)n.push("<strong>Cash:</strong> DSO of "+dso.toFixed(0)+" days is over the 45-day target. Review the oldest receivables with the credit team.");
+  el("notes").innerHTML=n.map(function(x){return "<li>"+x+"</li>";}).join("");
+}
+
+// ---------- Trend chart ----------
+var chart;
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function renderChart(){
+  var a=[],f=[],b=[];
+  for(var m=0;m<12;m++){
+    var R=rows.filter(function(x){return inRegion(x)&&x.m===m;});
+    var v=sum(R,"rev");
+    a.push(m<ACT?v/1e6:null); f.push(m>=ACT?v/1e6:null); b.push(sum(R,"budRev")/1e6);
+  }
+  var R=rows.filter(inRegion), fy=sum(R,"rev"), fyb=sum(R,"budRev");
+  el("fcnote").textContent="Full-year 2026 revenue: "+money(fy)+" (actual through October plus forecast), "+smoney(fy-fyb)+" ("+spct(fy/fyb-1)+") against a budget of "+money(fyb)+".";
+  var ink=css("--muted"), line=css("--line");
+  var data={labels:MONTHS,datasets:[
+    {type:"bar",label:"Actual",data:a,backgroundColor:css("--accent"),borderRadius:3,stack:"s"},
+    {type:"bar",label:"Forecast",data:f,backgroundColor:css("--forecast"),borderRadius:3,stack:"s"},
+    {type:"line",label:"Budget",data:b,borderColor:css("--budget"),backgroundColor:css("--budget"),borderDash:[5,4],pointRadius:2,tension:0.25}
+  ]};
+  var opts={responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+    plugins:{legend:{labels:{color:ink,boxWidth:12}},tooltip:{callbacks:{label:function(c){return c.raw==null?null:c.dataset.label+": $"+c.raw.toFixed(2)+"M";}}}},
+    scales:{x:{ticks:{color:ink},grid:{display:false}},y:{ticks:{color:ink,callback:function(v){return "$"+v+"M";}},grid:{color:line}}}};
+  if(typeof Chart==="undefined"){el("trend").parentNode.innerHTML='<p class="method">Chart library did not load. The forecast note below still shows the totals.</p>';return;}
+  if(chart){chart.data=data;chart.options=opts;chart.update();}else{chart=new Chart(el("trend"),{data:data,options:opts});}
+}
+
+// ---------- What-if ----------
+var LEVERS=[
+  {id:"eq",label:"Machine units sold",min:-15,max:15,unit:"%"},
+  {id:"parts",label:"Parts volume",min:-20,max:20,unit:"%"},
+  {id:"labor",label:"Service labor rate",min:-10,max:10,unit:"%"},
+  {id:"rent",label:"Rental time utilization",min:-10,max:10,unit:" pts"},
+  {id:"oh",label:"Overhead",min:-10,max:10,unit:"%"}
+];
+var lv={eq:0,parts:0,labor:0,rent:0,oh:0};
+function buildSliders(){
+  var h=LEVERS.map(function(l){return '<div class="slider"><div class="row"><label for="s_'+l.id+'">'+l.label+'</label><output id="o_'+l.id+'">0'+l.unit+'</output></div><input type="range" id="s_'+l.id+'" min="'+l.min+'" max="'+l.max+'" step="1" value="0"></div>';}).join("");
+  el("sliders").innerHTML=h+'<button type="button" class="reset" id="reset">Reset to base</button>';
+  LEVERS.forEach(function(l){var s=el("s_"+l.id);s.oninput=function(){lv[l.id]=+s.value;el("o_"+l.id).textContent=(s.value>0?"+":"")+s.value+l.unit;renderWhatIf();};});
+  el("reset").onclick=function(){LEVERS.forEach(function(l){lv[l.id]=0;el("s_"+l.id).value=0;el("o_"+l.id).textContent="0"+l.unit;});renderWhatIf();};
+}
+function scenario(L){
+  var R=rows.filter(inRegion), O=oh.filter(inRegion), P=ops.filter(inRegion);
+  function d(k,f){return sum(R.filter(function(x){return x.d===k;}),f);}
+  var util=sum(P,"onRent")/sum(P,"fleet");
+  var e={rev:d("Equipment sales","rev")*(1+L.eq/100),gp:d("Equipment sales","gp")*(1+L.eq/100)};
+  var p={rev:d("Parts","rev")*(1+L.parts/100),gp:d("Parts","gp")*(1+L.parts/100)};
+  var sR=d("Service","rev"), s={rev:sR*(1+L.labor/100),gp:d("Service","gp")+sR*L.labor/100};
+  var rR=d("Rental","rev"), f=(util+L.rent/100)/util, r={rev:rR*f,gp:d("Rental","gp")+rR*(f-1)};
+  var o=sum(O,"act")*(1+L.oh/100);
+  var gp=e.gp+p.gp+s.gp+r.gp;
+  return {rev:e.rev+p.rev+s.rev+r.rev,gp:gp,oh:o,contrib:gp-o,abs:(p.gp+s.gp)/o,util:util};
+}
+function renderWhatIf(){
+  var base=scenario({eq:0,parts:0,labor:0,rent:0,oh:0}), now=scenario(lv);
+  var h='<thead><tr><th>Full year</th><th>Base</th><th>Scenario</th><th>Change</th></tr></thead><tbody>';
+  [["Revenue","rev",money],["Gross profit","gp",money],["Overhead","oh",money],["Contribution after overhead","contrib",money],["Absorption rate","abs",function(v){return pct(v,0);}]].forEach(function(x){
+    var dv=now[x[1]]-base[x[1]], good=x[1]==="oh"?dv<=0:dv>=0;
+    var chg=x[1]==="abs"?((dv>=0?"+":"")+(dv*100).toFixed(0)+" pts"):smoney(dv);
+    h+='<tr><td>'+x[0]+'</td><td>'+x[2](base[x[1]])+'</td><td>'+x[2](now[x[1]])+'</td><td class="'+(Math.abs(dv)<1e-9?"":(good?"up":"down"))+'">'+chg+'</td></tr>';
+  });
+  el("whatif").innerHTML=h+"</tbody>";
+  // Each lever alone, at +1 step, to rank sensitivity
+  var one=LEVERS.filter(function(l){return l.id!=="oh";}).map(function(l){var L={eq:0,parts:0,labor:0,rent:0,oh:0};L[l.id]=1;return {l:l,v:scenario(L).contrib-base.contrib};}).sort(function(a,b){return b.v-a.v;});
+  var dc=now.contrib-base.contrib;
+  var txt=(Math.abs(dc)<1?"Move a lever to test a scenario. ":"This scenario changes contribution after overhead by <strong>"+smoney(dc)+"</strong>. ")+
+    "Step for step, the biggest lever is <strong>"+one[0].l.label.toLowerCase()+"</strong> ("+smoney(one[0].v)+" for each "+(one[0].l.unit==="%"?"1%":"point")+"), then "+one[1].l.label.toLowerCase()+" ("+smoney(one[1].v)+" for each "+(one[1].l.unit==="%"?"1%":"point")+").";
+  el("whatifText").innerHTML=txt;
+}
+
+// ---------- Checks ----------
+function renderChecks(){
+  var c=[];
+  function add(name,pass,detail){c.push('<li><span class="'+(pass?"ok":"flag")+'">'+(pass?"Pass":"Fail")+'</span><span><strong>'+name+'.</strong> '+detail+'</span></li>');}
+  add("Complete grid",rows.length===12*REGIONS.length*DEPTS.length,rows.length+" department rows = 12 months &times; "+REGIONS.length+" regions &times; "+DEPTS.length+" departments.");
+  var byDept=DEPTS.reduce(function(s,d){return s+sum(rows.filter(function(x){return x.d===d.k;}),"rev");},0);
+  var byReg=REGIONS.reduce(function(s,r){return s+sum(rows.filter(function(x){return x.r===r.k;}),"rev");},0);
+  add("Departments tie to regions",Math.abs(byDept-byReg)<0.01,"Revenue summed by department and by region both equal "+money(byDept)+".");
+  var gl=0;for(var m=0;m<ACT;m++){gl+=Math.round(sum(rows.filter(function(x){return x.m===m;}),"rev")*100)/100;}
+  var rep=sum(rows.filter(function(x){return x.m<ACT;}),"rev");
+  add("Report ties to the GL",Math.abs(gl-rep)<1,"Year-to-date revenue on the report ("+money(rep)+") matches the sample GL to within $1.");
+  var bm=0;for(var j=0;j<12;j++)bm+=sum(rows.filter(function(x){return x.m===j;}),"budRev");
+  add("Budget is complete",Math.abs(bm-sum(rows,"budRev"))<0.01&&rows.every(function(x){return x.budRev>0;}),"All 12 months are budgeted for every region and department.");
+  add("Actual and forecast periods",rows.every(function(x){return (x.m<ACT)===(x.kind==="A");}),"January to October are actual; November and December are forecast. No month is both.");
+  add("No negative revenue or gross profit",rows.every(function(x){return x.rev>0&&x.gp>0;}),"Every department row is positive.");
+  var bands={"Equipment sales":[0.07,0.16],"Parts":[0.28,0.38],"Service":[0.55,0.70],"Rental":[0.38,0.50]};
+  var bad=rows.filter(function(x){var g=x.gp/x.rev;return g<bands[x.d][0]||g>bands[x.d][1];}).length;
+  add("Margins in expected ranges",bad===0,bad===0?"Every row's margin falls inside its department's expected range.":bad+" rows fall outside the expected range; review before release.");
+  add("Utilization at or under 100%",ops.every(function(x){return x.billed<=x.avail&&x.onRent<=x.fleet;}),"Billed hours never exceed available hours, and days on rent never exceed fleet days.");
+  el("checks").innerHTML=c.join("");
+}
+
+// ---------- Catalog ----------
+function renderCatalog(){
+  var c=[
+    ["Weekly flash: revenue and gross profit","Weekly, Monday","CFO, branch leaders","GL, dealer business system"],
+    ["Monthly financial pack (this page)","Monthly, close + 5 days","CFO, Budget and Forecasting Manager","GL"],
+    ["Department P&amp;L review","Monthly","Department and branch leaders","GL"],
+    ["Absorption rate by branch","Monthly","Product support leaders","GL"],
+    ["Service tech utilization","Weekly","Service managers","Dealer business system"],
+    ["Rental fleet utilization and returns","Weekly","Rental manager","Dealer business system"],
+    ["Receivables aging and DSO","Weekly","Credit manager, CFO","GL, AR subledger"],
+    ["Quarterly forecast","Quarterly","CFO, executive team","GL, budget file"],
+    ["Annual budget and sensitivity","Yearly, with updates","CFO, executive team","GL, budget file, assumptions"],
+    ["Off-cycle requests log","As needed","Requesting leader","Varies"]
+  ];
+  el("catalog").innerHTML='<thead><tr><th>Report</th><th>Frequency and due</th><th>Audience</th><th>Source</th></tr></thead><tbody>'+c.map(function(r){return "<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td><td>"+r[3]+"</td></tr>";}).join("")+"</tbody>";
+  Array.prototype.forEach.call(document.querySelectorAll("#catalog td"),function(td){td.style.textAlign="left";td.style.whiteSpace="normal";});
+  Array.prototype.forEach.call(document.querySelectorAll("#catalog th"),function(th){th.style.textAlign="left";});
+}
+
+buildSliders(); render(); renderChart(); renderWhatIf(); renderChecks(); renderCatalog();
+if(window.matchMedia){var mq=window.matchMedia("(prefers-color-scheme: dark)");if(mq.addEventListener)mq.addEventListener("change",renderChart);}
+})();
+</script>
+</body>
+</html>
