@@ -5,6 +5,7 @@ project:
     - code/
     - cat/
     - dealer-pack/
+    - benefits-recon/
 
 website:
   title: "Thomas Baynum"

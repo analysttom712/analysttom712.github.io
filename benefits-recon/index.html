@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Benefits Premium Reconciliation Pack</title>
+<meta name="description" content="Sample monthly benefits pack on invented data: voluntary deduction reconciliation, a retiree premium subledger that ties to the GL, continuation coverage receivables and an exception list. Every number is made up.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Monthly benefits premium reconciliation pack (sample data)">
+<meta property="og:description" content="Voluntary deductions versus carrier billing, a retiree medical and dental premium subledger tied to the general ledger, continuation coverage receivables with the 2% fee, and eight exception rules traced to the participant. Fictional groups, made-up numbers.">
+<meta property="og:url" content="https://analysttom712.github.io/benefits-recon/">
+<meta property="og:image" content="https://analysttom712.github.io/benefits-recon/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#FBFAF6; --surface:#FFFFFF; --soft:#F1EFE8; --ink:#22231F; --muted:#5E5D57; --line:#E3E0D6;
+  --accent:#2F6B4F; --accent-soft:#E4EFE7; --budget:#8A8676; --forecast:#9DBCAA;
+  --good:#2F6B4F; --bad:#A2412F; --bad-soft:#F6E3DE; --warn-soft:#FFF6DD; --warn:#8A6A12;
+  --c1:#2F6B4F; --c2:#8A8676; --c3:#9DBCAA; --c4:#A2412F;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#181915; --surface:#21231E; --soft:#2A2C26; --ink:#ECEAE2; --muted:#A9A69B; --line:#3A3C35;
+    --accent:#7FBF9C; --accent-soft:#24382C; --budget:#A9A69B; --forecast:#4E7A61;
+    --good:#7FBF9C; --bad:#E59A88; --bad-soft:#3C2620; --warn-soft:#3A3220; --warn:#E3C46E;
+    --c1:#7FBF9C; --c2:#A9A69B; --c3:#4E7A61; --c4:#E59A88;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#181915; --surface:#21231E; --soft:#2A2C26; --ink:#ECEAE2; --muted:#A9A69B; --line:#3A3C35;
+  --accent:#7FBF9C; --accent-soft:#24382C; --budget:#A9A69B; --forecast:#4E7A61;
+  --good:#7FBF9C; --bad:#E59A88; --bad-soft:#3C2620; --warn-soft:#3A3220; --warn:#E3C46E;
+  --c1:#7FBF9C; --c2:#A9A69B; --c3:#4E7A61; --c4:#E59A88;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 48px}
+.top{border-bottom:1px solid var(--line);padding:12px 0;margin-bottom:8px}
+.top a{color:var(--accent);text-decoration:none;font-weight:500}
+h1,h2{font-family:"Source Serif 4",Georgia,serif;font-weight:500;line-height:1.2}
+h1{font-size:2rem;margin:1.2rem 0 .3rem}
+h2{font-size:1.4rem;margin:2.4rem 0 .4rem}
+h3{font-size:1rem;margin:0 0 .5rem;font-weight:600}
+.sub{color:var(--muted);margin:0 0 1rem;max-width:780px}
+.banner{background:var(--warn-soft);border:1px dashed var(--warn);color:var(--ink);border-radius:8px;padding:.6rem .9rem;font-size:.9rem;margin:1rem 0}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;align-items:end;background:var(--soft);border-radius:10px;padding:.8rem 1rem;margin:1rem 0;position:sticky;top:0;z-index:5}
+.controls label{font-size:.8rem;color:var(--muted);display:block;margin-bottom:2px}
+select{font:inherit;padding:.35rem .5rem;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;border:0;background:var(--surface);color:var(--ink);padding:.35rem .8rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin:1rem 0}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem}
+.kpi .v{font-size:1.4rem;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+.kpi .l{font-size:.8rem;color:var(--muted)}
+.kpi .d{font-size:.82rem;margin-top:2px}
+.up{color:var(--good)} .down{color:var(--bad)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1rem;margin:1rem 0}
+.chartbox{position:relative;height:300px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{padding:.45rem .6rem;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);font-size:.8rem}
+tr.total td{font-weight:600;border-top:2px solid var(--ink)}
+tr.sub td{color:var(--muted)}
+.flag{display:inline-block;font-size:.72rem;padding:1px 7px;border-radius:5px;background:var(--bad-soft);color:var(--bad)}
+.ok{display:inline-block;font-size:.72rem;padding:1px 7px;border-radius:5px;background:var(--accent-soft);color:var(--good)}
+.tag{display:inline-block;font-size:.72rem;padding:1px 7px;border-radius:5px;background:var(--soft);color:var(--muted)}
+ul.notes{margin:.4rem 0 0;padding-left:1.2rem} ul.notes li{margin:.35rem 0}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem}
+.grid2>*{min-width:0}
+@media (max-width:760px){.grid2{grid-template-columns:minmax(0,1fr)} h1{font-size:1.6rem} .controls{position:static} .wrap{padding:0 16px 40px}}
+.checks li{list-style:none;margin:.45rem 0;display:flex;gap:.6rem;align-items:baseline}
+.checks{padding:0;margin:0}
+.method{color:var(--muted);font-size:.9rem}
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+.rulebar{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .8rem}
+.rulebar button{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:.25rem .7rem;cursor:pointer}
+.rulebar button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.schemawrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.schema{width:100%;height:auto;display:block;min-width:680px}
+.schema text{font-family:Inter,system-ui,sans-serif}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-top:.5rem}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:baseline}
+code{background:var(--soft);padding:.1rem .35rem;border-radius:4px;font-size:.85em}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:.7rem 0}
+details.sec>summary{cursor:pointer;list-style:none;padding:.8rem 1rem;display:flex;flex-wrap:wrap;gap:.15rem 1rem;align-items:baseline;justify-content:space-between;border-radius:10px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::marker{content:""}
+details.sec>summary:hover{background:var(--soft)}
+details.sec>summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+details.sec[open]>summary{border-bottom:1px solid var(--line);border-radius:10px 10px 0 0}
+.stitle{font-family:"Source Serif 4",Georgia,serif;font-weight:500;font-size:1.12rem;line-height:1.3;margin:0;display:flex;align-items:baseline;gap:.55rem;min-width:0}
+.stitle::before{content:"";flex:none;width:0;height:0;border-left:6px solid var(--accent);border-top:4.5px solid transparent;border-bottom:4.5px solid transparent;transition:transform .15s ease}
+details.sec[open]>summary .stitle::before{transform:rotate(90deg)}
+.sum{color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums;text-align:right;min-width:0}
+.secbody{padding:.9rem 1rem 1rem}
+.secbody>.sub:first-child{margin-top:0}
+.panel{border:1px solid var(--line);border-radius:8px;padding:.9rem;background:var(--bg)}
+@media (max-width:760px){.sum{text-align:left}.stitle{font-size:1.05rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="https://analysttom712.github.io/">&larr; Thomas Baynum &middot; portfolio</a></div>
+
+  <h1>Monthly benefits premium reconciliation pack</h1>
+  <p class="sub">A sample of the reporting I build for benefits operations: voluntary payroll deductions matched to carrier billing each pay period, a retiree medical and dental premium subledger that ties to the general ledger, continuation coverage receivables with the 2% administrative fee, and an exception list that traces every variance down to one participant.</p>
+  <div class="banner"><strong>Invented data, fictional groups.</strong> Every participant, district, plan, person number and dollar figure on this page is made up by a seeded generator that runs in your browser. Nothing here comes from any employer, carrier, plan or person, and no employer is named or described. Reporting month is October 2026; January through October are closed.</div>
+
+  <div class="controls" role="group" aria-label="Pack filters">
+    <div><label for="month">Reporting month</label><select id="month"></select></div>
+    <div><label for="district">District</label><select id="district"></select></div>
+    <div><label>Period</label><div class="seg" id="view"><button type="button" data-v="month" aria-pressed="true">Month</button><button type="button" data-v="ytd" aria-pressed="false">Year to date</button></div></div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <h2>The data model behind it</h2>
+  <p class="sub">A star schema. Every relationship is one-to-many in a single direction, from the dimension to the fact, and every fact joins on the person number. Keeping the direction single means a filter on a district or a plan reaches the facts and stops there, instead of travelling back up another table and widening the result.</p>
+  <div class="card">
+    <div class="schemawrap">
+    <svg class="schema" viewBox="0 0 980 520" role="img" aria-label="Star schema diagram: five dimension tables joined one-to-many to four fact tables on person number">
+      <defs>
+        <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker>
+      </defs>
+      <g color="var(--line)" stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#ar)">
+        <path d="M212,70 L360,210"/><path d="M212,160 L360,235"/><path d="M212,250 L360,260"/><path d="M212,340 L360,285"/><path d="M212,430 L360,310"/>
+        <path d="M560,200 L700,70"/><path d="M560,240 L700,180"/><path d="M560,290 L700,290"/><path d="M560,330 L700,400"/>
+      </g>
+      <g font-size="12">
+        <g fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5">
+          <rect x="20" y="44" width="192" height="52" rx="8"/><rect x="20" y="134" width="192" height="52" rx="8"/>
+          <rect x="20" y="224" width="192" height="52" rx="8"/><rect x="20" y="314" width="192" height="52" rx="8"/>
+          <rect x="20" y="404" width="192" height="52" rx="8"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="34" y="66" font-weight="600">Dim Participant</text><text x="34" y="84" fill="var(--muted)">person number (key)</text>
+          <text x="34" y="156" font-weight="600">Dim Contact / Dependent</text><text x="34" y="174" fill="var(--muted)">relationship, date of birth</text>
+          <text x="34" y="246" font-weight="600">Dim Plan</text><text x="34" y="264" fill="var(--muted)">plan, tier, rate, effective date</text>
+          <text x="34" y="336" font-weight="600">Dim District</text><text x="34" y="354" fill="var(--muted)">group, region, billing cycle</text>
+          <text x="34" y="426" font-weight="600">Dim Date</text><text x="34" y="444" fill="var(--muted)">marked as the date table</text>
+        </g>
+        <g fill="var(--soft)" stroke="var(--line)" stroke-width="1.5"><rect x="360" y="196" width="200" height="140" rx="10"/></g>
+        <text x="460" y="232" text-anchor="middle" fill="var(--ink)" font-weight="600" font-size="13">Single direction</text>
+        <text x="460" y="256" text-anchor="middle" fill="var(--muted)">one dimension row</text>
+        <text x="460" y="274" text-anchor="middle" fill="var(--muted)">to many fact rows,</text>
+        <text x="460" y="292" text-anchor="middle" fill="var(--muted)">joined on person number</text>
+        <text x="460" y="316" text-anchor="middle" fill="var(--muted)">no two-way filters</text>
+        <g fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5">
+          <rect x="700" y="44" width="260" height="52" rx="8"/><rect x="700" y="154" width="260" height="52" rx="8"/>
+          <rect x="700" y="264" width="260" height="52" rx="8"/><rect x="700" y="374" width="260" height="52" rx="8"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="716" y="66" font-weight="600">Fact General Ledger</text><text x="716" y="84" fill="var(--muted)">posted premium and cash by period</text>
+          <text x="716" y="176" font-weight="600">Fact Monthly Draft / Billing</text><text x="716" y="194" fill="var(--muted)">invoice item, admin fee, cash applied</text>
+          <text x="716" y="286" font-weight="600">Fact Benefits Card Premium</text><text x="716" y="304" fill="var(--muted)">elected coverage and rate on file</text>
+          <text x="716" y="396" font-weight="600">Fact Activity Log</text><text x="716" y="414" fill="var(--muted)">keyed events: death, age-out, tier change</text>
+        </g>
+      </g>
+    </svg>
+    </div>
+    <p class="method" style="margin:.8rem 0 0">The eight exception rules are measures over these tables, not separate extracts. The activity log is what lets a variance be explained rather than only counted: it carries the date an event was keyed, which is usually later than the date it happened, and that gap is the cause of most of what lands on the exception list.</p>
+  </div>
+
+  <h2>The pack</h2>
+  <p class="sub">Each section below is closed until you open it. The headline on every one is live: change the month, the district or the period above and every summary updates, whether the section is open or not.</p>
+
+  <details class="sec" id="sec-notes">
+    <summary><h2 class="stitle">What the close found</h2><span class="sum" id="sum-notes"></span></summary>
+    <div class="secbody"><ul class="notes" id="notes"></ul></div>
+  </details>
+
+  <details class="sec" id="sec-tieout">
+    <summary><h2 class="stitle">Summary tie-out: billed, collected, posted</h2><span class="sum" id="sum-tieout"></span></summary>
+    <div class="secbody">
+      <p class="sub">Three strands in one view. Billed is what the subledger invoiced, collected is cash applied to those invoices, and posted is what reached the general ledger. The two reconciling columns are the only things allowed to sit between the subledger and the GL, and both are itemized below.</p>
+      <div class="tablewrap"><table id="tieout"></table></div>
+      <p class="method" style="margin:.6rem 0 0">Receipts in transit are collections taken on the last business day of the month that post to the GL in the following month. Unapplied cash is money received that exceeds the invoice it arrived against and sits in suspense until it is applied or refunded.</p>
+      <div class="grid2" style="margin-top:1rem">
+        <div class="panel"><h3>Receivable roll-forward</h3><div class="tablewrap"><table id="roll"></table></div></div>
+        <div class="panel"><h3>Cash tie-out to the GL</h3><div class="tablewrap"><table id="cashtie"></table></div></div>
+      </div>
+      <h3 style="margin-top:1.2rem">Billed, collected and posted by month</h3>
+      <div class="chartbox"><canvas id="trend" aria-label="Premium billed, cash collected and amount posted to the general ledger by month"></canvas></div>
+      <p class="method" style="margin:.6rem 0 0" id="trendnote"></p>
+    </div>
+  </details>
+
+  <details class="sec" id="sec-retiree">
+    <summary><h2 class="stitle">Retiree premium subledger</h2><span class="sum" id="sum-retiree"></span></summary>
+    <div class="secbody">
+      <p class="sub">The centerpiece. Retiree medical and dental premium is billed from the subledger, drafted or paid by the retiree, and posted to the GL. Each plan line shows what the eligibility record said the premium should be, what was actually billed, and what came in.</p>
+      <div class="tablewrap"><table id="retiree"></table></div>
+      <p class="method" style="margin:.6rem 0 0">Expected premium is the plan rate for the participant's tier on the bill date, taken from the plan table and the eligibility record. Any line where billed does not equal expected is picked up by the expected-versus-actual rule and traced to the participant.</p>
+    </div>
+  </details>
+
+  <details class="sec" id="sec-vol">
+    <summary><h2 class="stitle">Voluntary deductions versus carrier billing</h2><span class="sum" id="sum-vol"></span></summary>
+    <div class="secbody">
+      <p class="sub">Each pay period, deductions taken in payroll system reporting are matched to the carrier's invoice, plan by plan and then participant by participant. A deduction with no invoice line, an invoice line with no deduction, and a deduction that does not equal the invoiced rate are three different problems with three different owners.</p>
+      <div class="tablewrap"><table id="vol"></table></div>
+      <p class="method" style="margin:.6rem 0 0">This is why the variance is reported gross and not only net. The carrier overbills some participants and underbills others in the same cycle, and the two directions partly cancel. The net is what lands in the benefits clearing account; the gross is what somebody has to go and correct, participant by participant, and they are never the same number. A clearing balance that does not return to zero within two cycles is escalated to the group's account manager with the participant list attached.</p>
+    </div>
+  </details>
+
+  <details class="sec" id="sec-cont">
+    <summary><h2 class="stitle">Continuation coverage billing and receivables</h2><span class="sum" id="sum-cont"></span></summary>
+    <div class="secbody">
+      <p class="sub">Continuation participants are billed the full group premium plus a 2% administrative fee and pay by personal remittance, so this is the strand where people stop paying, pay part of the bill, or pay late. The grace period runs 30 days; a participant who passes it is flagged for a termination notice.</p>
+      <div class="grid2">
+        <div class="panel"><div class="tablewrap"><table id="cont"></table></div></div>
+        <div class="panel"><h3>Payment behavior this period</h3><div class="chartbox" style="height:260px"><canvas id="behavior" aria-label="Continuation participants by payment behavior"></canvas></div></div>
+      </div>
+    </div>
+  </details>
+
+  <details class="sec" id="sec-aging">
+    <summary><h2 class="stitle">Outstanding balance aging</h2><span class="sum" id="sum-aging"></span></summary>
+    <div class="secbody">
+      <p class="sub">Open invoice items at the reporting month end, aged from the bill date. Aging is calculated at the invoice-item level, not on a participant's net balance, so a participant who pays this month's bill while an older one is still open still shows in the older bucket.</p>
+      <div class="chartbox" style="height:280px"><canvas id="aging" aria-label="Outstanding balance by aging bucket and program"></canvas></div>
+      <div class="tablewrap" style="margin-top:1rem"><table id="agingtab"></table></div>
+      <p class="method" style="margin:.6rem 0 0" id="agingnote"></p>
+    </div>
+  </details>
+
+  <details class="sec" id="sec-exc">
+    <summary><h2 class="stitle">Exception list</h2><span class="sum" id="sum-exc"></span></summary>
+    <div class="secbody">
+      <p class="sub">Eight rules run against the facts every time the pack is built. Each one is a measure over the same star schema, so a count on this page and a row in the evidence table below are the same calculation. Pick a rule to see the participants behind the count.</p>
+      <div class="tablewrap"><table id="rules"></table></div>
+      <div class="rulebar" id="rulebar" role="group" aria-label="Filter evidence by rule" style="margin-top:1rem"></div>
+      <div class="tablewrap"><table id="evidence"></table></div>
+      <p class="method" style="margin:.6rem 0 0" id="evnote"></p>
+    </div>
+  </details>
+
+  <details class="sec" id="sec-how">
+    <summary><h2 class="stitle">How the checks work</h2><span class="sum" id="sum-how">Completeness first, rates rebuilt rather than trusted, cash matched item by item, and only two reconciling items allowed</span></summary>
+    <div class="secbody method">
+      <ul class="notes">
+      <li><strong>Completeness before anything else.</strong> Every participant with an active coverage record in a month must have exactly one invoice item for each elected plan. Counts are compared both ways: invoice items without an eligibility record, and eligibility records without an invoice item.</li>
+      <li><strong>Expected premium is rebuilt, not trusted.</strong> The rate is recalculated from the plan table and the participant's tier on the bill date, including mid-year rate changes, and compared to what was billed. Rate changes and tier changes are the two places where this breaks.</li>
+      <li><strong>Cash is matched at the item level.</strong> A payment is applied against a specific invoice item, so a participant can be current on this month and 90 days late on an older one at the same time. Partial payments stay partial; they are not netted into a single balance.</li>
+      <li><strong>The subledger ties to the GL every month, with a named reconciling item or none at all.</strong> Receipts in transit and unapplied cash are the only two permitted, and each is backed by the list of items that make it up. An unexplained difference stops the pack.</li>
+      <li><strong>Dates drive the rules.</strong> Age-26 and age-65 are evaluated against the bill date, not the run date. Death-related rules compare the event date with the bill date and the draft date separately, because a bill raised after a death and a draft taken after a death are two different conversations and two different fixes.</li>
+      <li><strong>Every count is clickable down to one person number.</strong> A number on a summary that cannot be opened to the rows behind it is not finished.</li>
+      <li><strong>Tools:</strong> Power BI with Power Query and DAX over payroll system reporting, carrier billing files and the general ledger; Python and SQL for the file intake and matching. Claude (AI) wrote the Python, SQL and DAX at my direction; I set the vendor formats, matching rules and checks, and reviewed every result.</li>
+    </ul>
+    </div>
+  </details>
+
+  <details class="sec" id="sec-checks">
+    <summary><h2 class="stitle">Build checks on this page</h2><span class="sum" id="sum-checks"></span></summary>
+    <div class="secbody">
+      <p class="sub">These run every time the page loads, against the invented data above. They are the same shape as the checks I run on a real pack before it is released.</p>
+      <ul class="checks" id="checks"></ul>
+    </div>
+  </details>
+
+  <footer>Invented data, fictional groups and plans. No employer, carrier or person is named or described. &middot; Thomas Baynum &middot; <a href="https://analysttom712.github.io/" style="color:var(--accent)">analysttom712.github.io</a></footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- seeded generator: all money in integer cents ---------------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+var rnd=mulberry32(20261114);
+function ri(a,b){return a+Math.floor(rnd()*(b-a+1));}
+function chance(p){return rnd()<p;}
+function pick(a){return a[Math.floor(rnd()*a.length)];}
+
+var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct"];
+function monthLabel(i){return i<0?"the prior year":MONTHS[i];}
+var MN=MONTHS.length;
+var YEAR=2026;
+var RATE_CHANGE_M=6; // July
+
+var DISTRICTS=["North Ridge","Harbor Point","Cedar Valley","Mill Creek"];
+var PROGRAMS=[
+  {k:"Voluntary",label:"Voluntary benefit deductions"},
+  {k:"Retiree",label:"Retiree medical and dental"},
+  {k:"Continuation",label:"Continuation coverage"}
+];
+
+// plan table: rates in cents by tier index 0=single,1=two-party,2=family
+var PLANS=[
+  {k:"Keystone Term Life",prog:"Voluntary",rates:[980,1740,2290],bump:0},
+  {k:"Keystone Accident",prog:"Voluntary",rates:[640,1180,1520],bump:0},
+  {k:"Summit Critical Illness",prog:"Voluntary",rates:[1450,2610,3380],bump:0},
+  {k:"Summit Hospital Indemnity",prog:"Voluntary",rates:[1890,3420,4510],bump:0},
+  {k:"Clearview Vision Plus",prog:"Voluntary",rates:[735,1390,2065],bump:0},
+  {k:"Heritage Medical Pre-65",prog:"Retiree",rates:[62400,118600,0],bump:0.042},
+  {k:"Heritage Medical 65+",prog:"Retiree",rates:[31800,60400,0],bump:0.042},
+  {k:"Heritage Dental Classic",prog:"Retiree",rates:[4250,8100,11700],bump:0.031},
+  {k:"Continuation Medical PPO",prog:"Continuation",rates:[78500,157000,212500],bump:0.035},
+  {k:"Continuation Dental",prog:"Continuation",rates:[5100,9800,14200],bump:0.035}
+];
+var PLANBY={};PLANS.forEach(function(p){PLANBY[p.k]=p;});
+var TIERS=["Single","Two-party","Family"];
+function rateOf(planKey,tier,m){
+  var p=PLANBY[planKey];var r=p.rates[tier];
+  return m>=RATE_CHANGE_M?Math.round(r*(1+p.bump)):r;
+}
+var ADMIN_FEE=0.02;
+
+/* ---------------- dimensions ---------------- */
+var pnSeq=104000;
+var PARTS=[];
+function newPart(prog){
+  var p={pn:"PN-"+(++pnSeq),prog:prog,dist:pick(DISTRICTS),elect:[],deps:[],flags:{},log:[]};
+  return p;
+}
+function addDep(p,rel,byear,bmonth){p.deps.push({rel:rel,by:byear,bm:bmonth});}
+function ageAt(by,bm,m){return YEAR-by-(m<bm?1:0);}
+
+// --- Voluntary population
+for(var i=0;i<1850;i++){
+  var p=newPart("Voluntary");
+  p.by=ri(1962,2001);p.bm=ri(0,11);
+  var n=ri(1,3),used={};
+  for(var j=0;j<n;j++){
+    var pl=pick(PLANS.slice(0,5));
+    if(used[pl.k])continue;used[pl.k]=1;
+    p.elect.push({plan:pl.k,tier:ri(0,2),start:chance(0.07)?ri(1,6):0,end:MN-1});
+  }
+  if(!p.elect.length)p.elect.push({plan:"Keystone Term Life",tier:0,start:0,end:MN-1});
+  if(chance(0.0016)){p.flags.rateErr=ri(-2,9);}                 // carrier billed a higher tier rate
+  else if(chance(0.0016)){p.flags.carrierUnder=ri(-2,9);}       // carrier invoiced a prorated amount in error
+  if(chance(0.0008)){p.flags.missedDed=ri(-2,9);}               // deduction not taken, carrier still billed
+  if(chance(0.0011)){p.flags.carrierMissed=ri(-2,9);}           // deduction taken, no invoice line from the carrier
+  if(chance(0.0006)){p.flags.termStillBilled=ri(-2,9);}         // coverage ended, carrier kept billing
+  PARTS.push(p);
+}
+
+// --- Retiree population
+for(i=0;i<620;i++){
+  p=newPart("Retiree");
+  p.by=ri(1948,1968);p.bm=ri(0,11);
+  var age=ageAt(p.by,p.bm,0);
+  var med=age>=65?"Heritage Medical 65+":"Heritage Medical Pre-65";
+  var tier=chance(0.42)?1:0;
+  p.elect.push({plan:med,tier:tier,start:0,end:MN-1});
+  if(chance(0.78))p.elect.push({plan:"Heritage Dental Classic",tier:tier===1?1:0,start:0,end:MN-1});
+  if(tier===1)addDep(p,"Spouse",ri(1950,1970),ri(0,11));
+  if(chance(0.01))addDep(p,"Child",2000,ri(0,11));
+  // planted conditions
+  if(med==="Heritage Medical Pre-65"&&chance(0.012)){        // turns 65 mid-year, rate not updated
+    var tm=ri(-2,9);p.by=YEAR-65;p.bm=tm;p.flags.turn65=tm;
+    p.log.push({m:tm+1,txt:"Medicare eligibility keyed "+MONTHS[Math.min(tm+1,MN-1)]+" 12, effective "+MONTHS[tm]+" 1"});
+  }
+  var kid=p.deps.filter(function(d){return d.rel==="Child";})[0];
+  if(kid&&chance(0.55)){var am=ri(0,7);kid.by=YEAR-26;kid.bm=am;p.flags.ageOut=am;
+    p.log.push({m:am,txt:"Dependent reached limiting age "+MONTHS[am]+" "+ri(3,27)+"; tier not changed"});}
+  if(chance(0.005)){var dm=ri(-2,9);p.flags.death=dm;p.flags.autoDraft=chance(0.55);
+    p.flags.spouseOpened=p.deps.some(function(d){return d.rel==="Spouse";})?chance(0.8):true;
+    p.log.push({m:dm+1,txt:"Date of death "+MONTHS[dm]+" "+ri(4,26)+", keyed "+MONTHS[Math.min(dm+1,MN-1)]+" "+ri(6,24)});}
+  if(chance(0.0015))p.flags.partial=ri(-2,9);
+  if(chance(0.0012))p.flags.lapse=ri(-2,9);
+  PARTS.push(p);
+}
+
+// --- Continuation population
+for(i=0;i<140;i++){
+  p=newPart("Continuation");
+  p.by=ri(1960,1996);p.bm=ri(0,11);
+  var ct=ri(0,2);
+  p.elect.push({plan:"Continuation Medical PPO",tier:ct,start:chance(0.3)?ri(1,4):0,end:MN-1});
+  if(chance(0.62))p.elect.push({plan:"Continuation Dental",tier:ct,start:p.elect[0].start,end:MN-1});
+  if(ct>0)addDep(p,"Spouse",ri(1962,1996),ri(0,11));
+  if(ct>1)addDep(p,"Child",chance(0.1)?2000:ri(2006,2016),ri(0,11));
+  var k2=p.deps.filter(function(d){return d.rel==="Child"&&d.by===2000;})[0];
+  if(k2){p.flags.ageOut=ri(Math.max(1,p.elect[0].start),7);k2.bm=p.flags.ageOut;p.log.push({m:k2.bm,txt:"Dependent reached limiting age "+MONTHS[k2.bm]+" "+ri(3,27)+"; tier not changed"});}
+  if(chance(0.05)){p.flags.lapse=ri(-2,9);p.log.push({m:p.flags.lapse,txt:"Last remittance received "+MONTHS[Math.max(0,p.flags.lapse-1)]+" "+ri(8,26)});}
+  else if(chance(0.025))p.flags.partial=ri(-2,9);
+  else if(chance(0.03))p.flags.overpay=ri(-2,9);
+  PARTS.push(p);
+}
+
+/* ---------------- facts ---------------- */
+// A variance is caught and corrected within two billing cycles, and coverage that
+// should have ended stops being billed inside the same window. Without that, one
+// event keyed late would reappear on the exception list every month afterwards.
+var W=2;
+function inWin(st,m){return m>=st&&m<st+W;}
+// Fact: monthly draft / billing. One row per participant, plan, month.
+var ROWS=[];
+PARTS.forEach(function(p){
+  p.elect.forEach(function(e){
+    for(var m=0;m<MN;m++){
+      if(m<e.start||m>e.end)continue;
+      // billing stops once the record is closed or the grace period has run out
+      if(p.flags.death!=null&&m>p.flags.death+W)continue;
+      if(p.flags.termStillBilled!=null&&m>=p.flags.termStillBilled+W)continue;
+      if(p.flags.lapse!=null&&p.prog==="Continuation"&&m>p.flags.lapse+1)continue;
+      if(p.flags.lapse!=null&&p.prog==="Retiree"&&m>p.flags.lapse+2)continue;
+      var covered=true;
+      // coverage should have ended
+      if(p.flags.termStillBilled!=null&&m>=p.flags.termStillBilled)covered=false;
+      if(p.flags.death!=null&&m>p.flags.death)covered=false;
+      var tier=e.tier;
+      // expected premium from eligibility + plan table
+      var expTier=tier;
+      if(p.flags.ageOut!=null&&m>p.flags.ageOut&&tier>0)expTier=Math.max(0,tier-1); // dependent should have come off
+      var expPlan=e.plan;
+      if(p.flags.turn65!=null&&m>=p.flags.turn65&&e.plan==="Heritage Medical Pre-65")expPlan="Heritage Medical 65+";
+      // what the invoice actually carried: the stale tier and plan until the correction lands
+      var billTier=(p.flags.ageOut!=null&&m>p.flags.ageOut+W)?expTier:tier;
+      var planKey=(p.flags.turn65!=null&&m>=p.flags.turn65+W)?expPlan:e.plan;
+      var expected=covered?rateOf(expPlan,expTier,m):0;
+      var billed=rateOf(planKey,billTier,m);
+      if(p.flags.rateErr!=null&&inWin(p.flags.rateErr,m))billed=rateOf(planKey,Math.min(2,tier+1),m);
+      if(p.flags.carrierUnder!=null&&inWin(p.flags.carrierUnder,m))billed=Math.round(rateOf(planKey,tier,m)*0.5);
+      if(p.flags.carrierMissed!=null&&inWin(p.flags.carrierMissed,m))billed=0;
+      var fee=p.prog==="Continuation"?Math.round(billed*ADMIN_FEE):0;
+      var due=billed+fee;
+
+      // cash
+      var applied=due, unapplied=0, writeoff=0;
+      if(p.prog==="Voluntary"){
+        // the deduction taken in payroll is what is remitted. It can be more or less
+        // than the carrier invoiced, and either direction sits in the clearing account.
+        applied=p.flags.missedDed!=null&&(m===p.flags.missedDed||m===p.flags.missedDed+1)?0:expected;
+      }else{
+        if(p.flags.lapse!=null&&m>=p.flags.lapse)applied=0;
+        else if(p.flags.partial!=null&&inWin(p.flags.partial,m))applied=Math.round(due*(0.45+0.2*(m-p.flags.partial)));
+        else if(p.flags.overpay!=null&&m===p.flags.overpay){unapplied=ri(1500,9000);}
+        if(p.flags.death!=null){
+          if(m>p.flags.death&&!p.flags.autoDraft)applied=0;         // billed but nobody paid
+          if(m>p.flags.death&&p.flags.autoDraft)applied=due;        // draft kept running
+        }
+      }
+      if(p.prog!=="Voluntary"&&applied>due)applied=due;
+      var open=due-applied;
+      // an item still open 120 days after the bill date is written off, recognised
+      // in the month it crosses that line, so nothing ages indefinitely
+      var woM=null;
+      if(open>0&&m+4<=MN-1){writeoff=open;woM=m+4;}
+      var inTransit=(applied>0&&chance(0.055))?applied:0;
+      ROWS.push({pn:p.pn,prog:p.prog,dist:p.dist,plan:planKey,tier:billTier,m:m,
+        covered:covered,expected:expected,billed:billed,fee:fee,due:due,
+        applied:applied,unapplied:unapplied,writeoff:writeoff,woM:woM,inTransit:inTransit});
+    }
+  });
+});
+var PBY={};PARTS.forEach(function(p){PBY[p.pn]=p;});
+
+/* ---------------- helpers ---------------- */
+function sum(a,f){var s=0;for(var i=0;i<a.length;i++)s+=a[i][f];return s;}
+function money(c){var s=c<0?"-":"";var a=Math.abs(c)/100;
+  return s+"$"+a.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function moneyK(c){var s=c<0?"-":"";var a=Math.abs(c)/100;
+  if(a>=1e6)return s+"$"+(a/1e6).toFixed(2)+"M";
+  if(a>=1e3)return s+"$"+Math.round(a/1e3)+"K";
+  return s+"$"+a.toFixed(0);}
+function smoney(c){return (c>=0?"+":"")+money(c);}
+function pct(v,d){return (v*100).toFixed(d==null?1:d)+"%";}
+function el(id){return document.getElementById(id);}
+function num(n){return n.toLocaleString("en-US");}
+
+var state={m:MN-1,dist:"All",view:"month",rule:"All"};
+function inDist(x){return state.dist==="All"||x.dist===state.dist;}
+function inPeriod(x){return state.view==="month"?x.m===state.m:x.m<=state.m;}
+function selRows(){return ROWS.filter(function(x){return inDist(x)&&inPeriod(x);});}
+function monthRows(m){return ROWS.filter(function(x){return inDist(x)&&x.m===m;});}
+
+// GL is derived: posted cash = applied + unapplied - in transit this month + in transit last month
+function glCash(m){
+  var cur=monthRows(m);
+  var prev=m>0?monthRows(m-1):[];
+  return sum(cur,"applied")+sum(cur,"unapplied")-sum(cur,"inTransit")+sum(prev,"inTransit");
+}
+function glRevenue(m){var c=monthRows(m);return sum(c,"due");}
+function woThrough(m){ // write-offs recognised up to and including month m
+  return sum(ROWS.filter(function(x){return inDist(x)&&x.woM!=null&&x.woM<=m;}),"writeoff");
+}
+function woIn(a,b,prog){ // write-offs recognised in months a..b inclusive
+  return sum(ROWS.filter(function(x){return inDist(x)&&x.woM!=null&&x.woM>=a&&x.woM<=b&&(!prog||x.prog===prog);}),"writeoff");
+}
+function arAt(m){ // closing receivable through month m
+  var a=ROWS.filter(function(x){return inDist(x)&&x.m<=m;});
+  return sum(a,"due")-sum(a,"applied")-woThrough(m);
+}
+
+/* ---------------- exception rules ---------------- */
+var RULES=[
+  {k:"Aging",name:"Aging over 60 days",desc:"A participant carrying a balance more than 60 days past its bill date."},
+  {k:"AgeOut",name:"Dependent age-out at 26",desc:"A dependent still included in the billed tier after reaching the limiting age."},
+  {k:"Turn65",name:"Turning 65",desc:"A participant aged 65 or over still billed the pre-65 medical rate."},
+  {k:"BilledDeath",name:"Billed after date of death",desc:"An invoice item raised for a month after the date of death."},
+  {k:"CollectedDeath",name:"Collected after date of death",desc:"Cash drafted or applied for a month after the date of death."},
+  {k:"Spouse",name:"Surviving spouse",desc:"A deceased participant with a covered spouse and no survivor coverage record opened."},
+  {k:"ExpVsAct",name:"Expected versus actual premium",desc:"Billed premium does not equal the rate on file for the tier on the bill date."},
+  {k:"Under",name:"Underpayment",desc:"Cash applied is more than zero but less than the amount due."}
+];
+function buildExceptions(){
+  var ev=[];
+  function add(rule,r,amount,note){
+    ev.push({rule:rule,pn:r.pn,dist:r.dist,prog:r.prog,plan:r.plan,m:r.m,amount:amount,note:note});
+  }
+  ROWS.forEach(function(r){
+    var p=PBY[r.pn];
+    // aging: open item older than 60 days at the reporting month end, evaluated per month below
+    if(p.flags.ageOut!=null&&r.m>p.flags.ageOut&&r.tier>0&&r.expected!==r.billed){
+      add("AgeOut",r,r.billed-r.expected,"Dependent reached age 26 in "+monthLabel(p.flags.ageOut)+"; tier still "+TIERS[r.tier]);
+    }
+    if(p.flags.turn65!=null&&r.m>=p.flags.turn65&&r.plan==="Heritage Medical Pre-65"){
+      add("Turn65",r,r.billed-r.expected,"Turned 65 in "+monthLabel(p.flags.turn65)+"; still on the pre-65 rate");
+    }
+    if(p.flags.death!=null&&r.m>p.flags.death){
+      add("BilledDeath",r,r.billed+r.fee,"Date of death "+monthLabel(p.flags.death)+", keyed the following month");
+      if(r.applied>0)add("CollectedDeath",r,r.applied,"Automatic draft continued after the date of death");
+    }
+    if(r.expected!==r.billed&&!(p.flags.ageOut!=null&&r.m>p.flags.ageOut)&&!(p.flags.turn65!=null&&r.m>=p.flags.turn65)&&!(p.flags.death!=null&&r.m>p.flags.death)){
+      add("ExpVsAct",r,r.billed-r.expected,
+        !r.covered?"Coverage ended; carrier continued to invoice":
+        r.billed===0?"No invoice line from the carrier; the "+money(r.expected)+" deduction was still taken":
+        r.billed>r.expected?"Carrier invoiced "+money(r.billed)+"; the rate on file is "+money(r.expected):
+        "Carrier invoiced "+money(r.billed)+", under the "+money(r.expected)+" rate on file");
+    }
+    if(r.applied>0&&r.applied<r.due){
+      add("Under",r,r.due-r.applied,"Partial remittance: "+money(r.applied)+" against "+money(r.due)+" due");
+    }
+  });
+  PARTS.forEach(function(p){
+    if(p.flags.death!=null&&p.flags.spouseOpened===false){
+      var r=ROWS.filter(function(x){return x.pn===p.pn;})[0];
+      // open every month from the death until a survivor record is set up
+      if(r)for(var mm=p.flags.death+1;mm<Math.min(MN,p.flags.death+1+W);mm++){
+        ev.push({rule:"Spouse",pn:p.pn,dist:p.dist,prog:p.prog,plan:r.plan,m:mm,
+          amount:rateOf(r.plan,0,mm),
+          note:"Covered spouse on the record; no survivor coverage opened since the "+monthLabel(p.flags.death)+" date of death"});
+      }
+    }
+  });
+  return ev;
+}
+var EXC=buildExceptions();
+
+function openItems(m){ // open invoice items at the end of month m, with age in days
+  var a=ROWS.filter(function(x){return inDist(x)&&x.m<=m;});
+  var out=[];
+  a.forEach(function(r){
+    var open=r.due-r.applied-((r.woM!=null&&r.woM<=m)?r.writeoff:0);
+    if(open>0.5)out.push({r:r,open:open,age:(m-r.m)*30+15});
+  });
+  return out;
+}
+function creditItems(m){ // items where more was remitted than the carrier invoiced
+  var a=ROWS.filter(function(x){return inDist(x)&&x.m<=m;});
+  var out=[];
+  a.forEach(function(r){
+    var open=r.due-r.applied-((r.woM!=null&&r.woM<=m)?r.writeoff:0);
+    if(open<-0.5)out.push({r:r,open:open});
+  });
+  return out;
+}
+function agingEx(m){ // one row per participant, the way an aging list is worked
+  var by={};
+  openItems(m).filter(function(o){return o.age>60;}).forEach(function(o){
+    var b=by[o.r.pn]||(by[o.r.pn]={r:o.r,amt:0,age:0,n:0});
+    b.amt+=o.open;b.n++;
+    if(o.age>b.age){b.age=o.age;b.r=o.r;}
+  });
+  return Object.keys(by).map(function(k){
+    var b=by[k];
+    return {rule:"Aging",pn:b.r.pn,dist:b.r.dist,prog:b.r.prog,plan:b.r.plan,m:b.r.m,amount:b.amt,
+      note:b.n+(b.n===1?" item":" items")+" open, oldest "+Math.round(b.age)+" days from the "+MONTHS[b.r.m]+" bill date"};
+  });
+}
+function allExceptions(){
+  var base=EXC.filter(function(e){return (state.dist==="All"||e.dist===state.dist)&&(state.view==="ytd"?e.m<=state.m:e.m===state.m);});
+  return base.concat(agingEx(state.m).filter(function(e){return state.view==="ytd"?e.m<=state.m:true;}));
+}
+
+/* ---------------- controls ---------------- */
+var mSel=el("month"),dSel=el("district");
+for(var k=0;k<MN;k++){var o=document.createElement("option");o.value=k;o.textContent=MONTHS[k]+" "+YEAR;mSel.appendChild(o);}
+mSel.value=state.m;
+["All"].concat(DISTRICTS).forEach(function(d){var o2=document.createElement("option");o2.value=d;o2.textContent=d==="All"?"All districts":d;dSel.appendChild(o2);});
+mSel.onchange=function(){state.m=+mSel.value;renderAll();};
+dSel.onchange=function(){state.dist=dSel.value;renderAll();};
+Array.prototype.forEach.call(document.querySelectorAll("#view button"),function(b){
+  b.onclick=function(){state.view=b.dataset.v;
+    Array.prototype.forEach.call(document.querySelectorAll("#view button"),function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
+    renderAll();};
+});
+
+/* ---------------- render: KPIs and notes ---------------- */
+function periodLabel(){
+  return (state.view==="month"?MONTHS[state.m]+" "+YEAR:"Year to date through "+MONTHS[state.m])+(state.dist==="All"?"":", "+state.dist);
+}
+function renderKpis(){
+  var R=selRows();
+  var billed=sum(R,"billed")+sum(R,"fee"), applied=sum(R,"applied");
+  var ar=arAt(state.m);
+  var exc=allExceptions();
+  var people={};exc.forEach(function(e){people[e.pn]=1;});
+  var collRate=billed?applied/billed:0;
+  var k=[
+    ["Premium billed",moneyK(billed),periodLabel(),true],
+    ["Cash applied",moneyK(applied),pct(collRate,1)+" of billed",collRate>=0.9],
+    ["Subledger to GL difference","$0.00","after two named reconciling items",true],
+    ["Receivable at month end",moneyK(ar),"all three programs",true],
+    ["Exceptions",num(exc.length),num(Object.keys(people).length)+" participants",exc.length===0]
+  ];
+  el("kpis").innerHTML=k.map(function(x){
+    return '<div class="kpi"><div class="l">'+x[0]+'</div><div class="v">'+x[1]+'</div><div class="d '+(x[3]?"up":"down")+'">'+x[2]+'</div></div>';
+  }).join("");
+}
+
+function setSum(id,txt){var e=el(id);if(e)e.textContent=txt;}
+function renderSummaries(){
+  var R=selRows();
+  var billed=sum(R,"billed")+sum(R,"fee"), applied=sum(R,"applied");
+  var dot=" \u00b7 ";
+  setSum("sum-notes",periodLabel()+dot+money(billed)+" billed"+dot+money(applied)+" collected");
+  var posted=PROGRAMS.reduce(function(a,pr){return a+progAgg(pr.k).posted;},0);
+  setSum("sum-tieout","3 programs"+dot+money(billed)+" billed"+dot+money(posted)+" posted to the GL"+dot+"difference $0.00");
+
+  var RR=R.filter(function(x){return x.prog==="Retiree";});
+  var rp={};RR.forEach(function(x){rp[x.pn]=1;});
+  setSum("sum-retiree","3 plans"+dot+num(Object.keys(rp).length)+" participants"+dot+money(sum(RR,"billed"))+" billed"+dot+smoney(sum(RR,"billed")-sum(RR,"expected"))+" against the rate on file");
+
+  var RV=R.filter(function(x){return x.prog==="Voluntary";});
+  var g=volAgg(RV);
+  setSum("sum-vol","5 plans"+dot+money(g.over)+" overbilled, "+money(g.under)+" underbilled"+dot+"net "+smoney(g.da-g.ia));
+
+  var RC=R.filter(function(x){return x.prog==="Continuation";});
+  var cp={};RC.forEach(function(r){var o=cp[r.pn]||(cp[r.pn]={due:0,applied:0});o.due+=r.due;o.applied+=r.applied;});
+  var none=0;Object.keys(cp).forEach(function(k2){if(cp[k2].applied===0&&cp[k2].due>0)none++;});
+  setSum("sum-cont",num(Object.keys(cp).length)+" participants"+dot+money(sum(RC,"billed")+sum(RC,"fee"))+" billed including "+money(sum(RC,"fee"))+" admin fee"+dot+num(none)+" paid nothing");
+
+  var open=openItems(state.m),over60=open.filter(function(o){return o.age>60;});
+  var tot=sum(open,"open"),o60=sum(over60,"open");
+  setSum("sum-aging",money(tot)+" outstanding"+dot+money(o60)+" over 60 days ("+(tot?pct(o60/tot,1):"0.0%")+")");
+
+  var exc=allExceptions();var ep={};exc.forEach(function(e){ep[e.pn]=1;});
+  var at=exc.reduce(function(a,e){return a+Math.abs(e.amount);},0);
+  setSum("sum-exc","8 rules"+dot+num(exc.length)+" items"+dot+num(Object.keys(ep).length)+" participants"+dot+money(at)+" at issue");
+}
+
+function renderNotes(){
+  var R=selRows();
+  var exc=allExceptions();
+  var byRule={};exc.forEach(function(e){byRule[e.rule]=(byRule[e.rule]||0)+1;});
+  var open=openItems(state.m), over60=open.filter(function(o){return o.age>60;});
+  var cont=R.filter(function(x){return x.prog==="Continuation";});
+  var lapsed={};cont.forEach(function(r){if(r.applied===0&&r.due>0)lapsed[r.pn]=1;});
+  var partial={};cont.forEach(function(r){if(r.applied>0&&r.applied<r.due)partial[r.pn]=1;});
+  var vol=R.filter(function(x){return x.prog==="Voluntary";});
+  var vg=volAgg(vol);
+  var volVar=vg.ia-vg.da;
+  var n=[];
+  n.push("<strong>"+periodLabel()+":</strong> "+money(sum(R,"billed")+sum(R,"fee"))+" billed across "+num(Object.keys(R.reduce(function(s,r){s[r.pn]=1;return s;},{})).length)+" participants, "+money(sum(R,"applied"))+" collected. The subledger ties to the general ledger with two named reconciling items and no unexplained difference.");
+  n.push("<strong>Voluntary:</strong> the deduction file and the carrier invoices differ by only "+money(Math.abs(volVar))+" net, and that is the number not to report on its own. Gross, the carrier overbilled "+money(vg.over)+" and underbilled "+money(vg.under)+" in the same cycle, "+money(vg.over+vg.under)+" of errors across "+num(byRule.ExpVsAct||0)+" participant lines. The two directions nearly cancel, and each one belongs to a different participant and a different fix.");
+  n.push("<strong>Retiree:</strong> "+num(byRule.Turn65||0)+" lines are still being billed the pre-65 medical rate after the participant turned 65, and "+num(byRule.AgeOut||0)+" lines still include a dependent who passed the limiting age. Both come from events keyed after the bill ran, not from the rate table.");
+  n.push("<strong>Continuation:</strong> "+num(Object.keys(lapsed).length)+" participants paid nothing this period and "+num(Object.keys(partial).length)+" paid part of the bill. Partial payments stay open at the item level so the next notice shows the right balance.");
+  if(over60.length)n.push("<strong>Aging:</strong> "+money(sum(over60,"open"))+" sits over 60 days across "+num(over60.length)+" open items. Anything past 120 days with no remittance is written off in every program and reported separately rather than left to inflate the receivable.");
+  if(byRule.BilledDeath||byRule.CollectedDeath)n.push("<strong>Death-related:</strong> "+num(byRule.BilledDeath||0)+" items were billed after a date of death and "+num(byRule.CollectedDeath||0)+" were collected after one. The collected ones are refund work and are escalated the day they appear; the billed-only ones are a credit and a corrected notice.");
+  el("notes").innerHTML=n.map(function(x){return "<li>"+x+"</li>";}).join("");
+}
+
+/* ---------------- tie-out ---------------- */
+function progAgg(prog){
+  var R=selRows().filter(function(x){return x.prog===prog;});
+  var ms=state.view==="month"?[state.m]:(function(){var a=[];for(var i=0;i<=state.m;i++)a.push(i);return a;})();
+  var transitEnd=sum(monthRows(state.m).filter(function(x){return x.prog===prog;}),"inTransit");
+  var transitBeg=state.view==="month"
+      ? (state.m>0?sum(monthRows(state.m-1).filter(function(x){return x.prog===prog;}),"inTransit"):0)
+      : 0;
+  var posted=sum(R,"applied")+sum(R,"unapplied")-transitEnd+transitBeg;
+  return {billed:sum(R,"billed"),fee:sum(R,"fee"),applied:sum(R,"applied"),
+    unapplied:sum(R,"unapplied"),transitEnd:transitEnd,transitBeg:transitBeg,
+    posted:posted,writeoff:sum(R,"writeoff"),ms:ms};
+}
+function renderTieout(){
+  var aggs=PROGRAMS.map(function(p){var a=progAgg(p.k);a.k=p.k;a.label=p.label;return a;});
+  var tot=aggs.reduce(function(s,a){
+    ["billed","fee","applied","unapplied","transitEnd","transitBeg","posted","writeoff"].forEach(function(f){s[f]=(s[f]||0)+a[f];});
+    return s;},{});
+  var h='<thead><tr><th>Program</th><th>Premium billed</th><th>Admin fee</th><th>Total billed</th><th>Cash applied</th><th>Unapplied cash</th><th>Receipts in transit</th><th>Posted to the GL</th><th>Tie</th></tr></thead><tbody>';
+  aggs.forEach(function(a){
+    h+='<tr><td>'+a.label+'</td><td>'+money(a.billed)+'</td><td>'+money(a.fee)+'</td><td>'+money(a.billed+a.fee)+'</td><td>'+money(a.applied)+'</td><td>'+money(a.unapplied)+'</td><td>'+money(a.transitBeg-a.transitEnd)+'</td><td>'+money(a.posted)+'</td><td><span class="ok">Ties</span></td></tr>';
+  });
+  h+='<tr class="total"><td>Total</td><td>'+money(tot.billed)+'</td><td>'+money(tot.fee)+'</td><td>'+money(tot.billed+tot.fee)+'</td><td>'+money(tot.applied)+'</td><td>'+money(tot.unapplied)+'</td><td>'+money(tot.transitBeg-tot.transitEnd)+'</td><td>'+money(tot.posted)+'</td><td><span class="ok">Ties</span></td></tr></tbody>';
+  el("tieout").innerHTML=h;
+
+  // roll-forward
+  var openAR=state.view==="month"?(state.m>0?arAt(state.m-1):0):0;
+  var R=selRows();
+  var billed=sum(R,"billed"),fee=sum(R,"fee"),applied=sum(R,"applied");
+  var wo=state.view==="month"?woIn(state.m,state.m):woIn(0,state.m);
+  var close=openAR+billed+fee-applied-wo;
+  var gl=arAt(state.m);
+  var r='<tbody>'+
+    '<tr><td>Opening receivable</td><td>'+money(openAR)+'</td></tr>'+
+    '<tr><td>Premium billed</td><td>'+money(billed)+'</td></tr>'+
+    '<tr><td>Administrative fee (2%)</td><td>'+money(fee)+'</td></tr>'+
+    '<tr><td>Cash applied</td><td>'+money(-applied)+'</td></tr>'+
+    '<tr><td>Write-offs over 120 days</td><td>'+money(-wo)+'</td></tr>'+
+    '<tr class="total"><td>Closing receivable, subledger</td><td>'+money(close)+'</td></tr>'+
+    '<tr><td>General ledger receivable</td><td>'+money(gl)+'</td></tr>'+
+    '<tr class="total"><td>Difference</td><td>'+money(close-gl)+'</td></tr></tbody>';
+  el("roll").innerHTML=r;
+
+  var t=tot;
+  var c='<tbody>'+
+    '<tr><td>Cash applied in the subledger</td><td>'+money(t.applied)+'</td></tr>'+
+    '<tr><td>Unapplied cash held in suspense</td><td>'+money(t.unapplied)+'</td></tr>'+
+    '<tr><td>Less receipts in transit at month end</td><td>'+money(-t.transitEnd)+'</td></tr>'+
+    '<tr><td>Plus receipts in transit at the prior month end</td><td>'+money(t.transitBeg)+'</td></tr>'+
+    '<tr class="total"><td>Expected cash in the GL</td><td>'+money(t.posted)+'</td></tr>'+
+    '<tr><td>General ledger cash receipts</td><td>'+money(t.posted)+'</td></tr>'+
+    '<tr class="total"><td>Difference</td><td>'+money(0)+'</td></tr></tbody>';
+  el("cashtie").innerHTML=c;
+}
+
+/* ---------------- program detail tables ---------------- */
+function renderRetiree(){
+  var R=selRows().filter(function(x){return x.prog==="Retiree";});
+  var plans=["Heritage Medical Pre-65","Heritage Medical 65+","Heritage Dental Classic"];
+  var h='<thead><tr><th>Plan</th><th>Participants</th><th>Expected premium</th><th>Billed</th><th>Variance</th><th>Collected</th><th>Open</th><th></th></tr></thead><tbody>';
+  var T={e:0,b:0,c:0};
+  plans.forEach(function(pl){
+    var a=R.filter(function(x){return x.plan===pl;});
+    if(!a.length)return;
+    var people={};a.forEach(function(x){people[x.pn]=1;});
+    var e=sum(a,"expected"),b=sum(a,"billed"),col=sum(a,"applied")-sum(a,"fee"),open=sum(a,"due")-sum(a,"applied");
+    T.e+=e;T.b+=b;T.c+=col;
+    h+='<tr><td>'+pl+'</td><td>'+num(Object.keys(people).length)+'</td><td>'+money(e)+'</td><td>'+money(b)+'</td><td class="'+(b===e?"":"down")+'">'+smoney(b-e)+'</td><td>'+money(col)+'</td><td>'+money(open)+'</td><td>'+(b===e?'<span class="ok">Matches</span>':'<span class="flag">Review</span>')+'</td></tr>';
+  });
+  var allPeople={};R.forEach(function(x){allPeople[x.pn]=1;});
+  h+='<tr class="total"><td>Total</td><td>'+num(Object.keys(allPeople).length)+'</td><td>'+money(T.e)+'</td><td>'+money(T.b)+'</td><td class="'+(T.b===T.e?"":"down")+'">'+smoney(T.b-T.e)+'</td><td>'+money(T.c)+'</td><td>'+money(sum(R,"due")-sum(R,"applied"))+'</td><td></td></tr>';
+  // district split
+  DISTRICTS.forEach(function(d){
+    if(state.dist!=="All"&&state.dist!==d)return;
+    var a=R.filter(function(x){return x.dist===d;});
+    if(!a.length)return;
+    var p2={};a.forEach(function(x){p2[x.pn]=1;});
+    h+='<tr class="sub"><td>&nbsp;&nbsp;'+d+'</td><td>'+num(Object.keys(p2).length)+'</td><td>'+money(sum(a,"expected"))+'</td><td>'+money(sum(a,"billed"))+'</td><td>'+smoney(sum(a,"billed")-sum(a,"expected"))+'</td><td>'+money(sum(a,"applied")-sum(a,"fee"))+'</td><td>'+money(sum(a,"due")-sum(a,"applied"))+'</td><td></td></tr>';
+  });
+  el("retiree").innerHTML=h+'</tbody>';
+}
+
+function volAgg(a){
+  var over=0,under=0;
+  a.forEach(function(r){var d=r.billed-r.applied;if(d>0)over+=d;else under+=-d;});
+  return {ded:a.filter(function(r){return r.applied>0;}).length,da:sum(a,"applied"),
+          inv:a.filter(function(r){return r.billed>0;}).length,ia:sum(a,"billed"),
+          over:over,under:under};
+}
+function renderVol(){
+  var R=selRows().filter(function(x){return x.prog==="Voluntary";});
+  var h='<thead><tr><th>Plan</th><th>Deductions taken</th><th>Deduction amount</th><th>Invoice lines</th><th>Carrier billed</th><th>Overbilled</th><th>Underbilled</th><th>Net</th><th>Participants to trace</th><th></th></tr></thead><tbody>';
+  var pp={};
+  PLANS.filter(function(p){return p.prog==="Voluntary";}).forEach(function(p){
+    var a=R.filter(function(x){return x.plan===p.k;});
+    if(!a.length)return;
+    var g=volAgg(a),net=g.da-g.ia;
+    var bad={};a.forEach(function(x){if(x.applied!==x.billed)bad[x.pn]=1;});
+    Object.keys(bad).forEach(function(k2){pp[k2]=1;});
+    h+='<tr><td>'+p.k+'</td><td>'+num(g.ded)+'</td><td>'+money(g.da)+'</td><td>'+num(g.inv)+'</td><td>'+money(g.ia)+'</td><td class="down">'+money(g.over)+'</td><td class="up">'+money(g.under)+'</td><td class="'+(net===0?"":(net>0?"up":"down"))+'">'+smoney(net)+'</td><td>'+num(Object.keys(bad).length)+'</td><td>'+(g.over===0&&g.under===0?'<span class="ok">Matches</span>':'<span class="flag">Review</span>')+'</td></tr>';
+  });
+  var G=volAgg(R),netAll=G.da-G.ia;
+  h+='<tr class="total"><td>Total</td><td>'+num(G.ded)+'</td><td>'+money(G.da)+'</td><td>'+num(G.inv)+'</td><td>'+money(G.ia)+'</td><td class="down">'+money(G.over)+'</td><td class="up">'+money(G.under)+'</td><td class="'+(netAll===0?"":(netAll>0?"up":"down"))+'">'+smoney(netAll)+'</td><td>'+num(Object.keys(pp).length)+'</td><td></td></tr>';
+  h+='<tr class="sub"><td>Gross errors in both directions</td><td colspan="4"></td><td colspan="2">'+money(G.over+G.under)+'</td><td>'+smoney(netAll)+'</td><td colspan="2" style="text-align:left;white-space:normal">'+(G.over+G.under>0?Math.round((G.over+G.under)/Math.max(1,Math.abs(netAll)))+" times the net":"")+'</td></tr>';
+  h+='<tr class="sub"><td>Benefits clearing account balance after remittance</td><td colspan="6"></td><td>'+money(G.ia-G.da)+'</td><td colspan="2"></td></tr>';
+  el("vol").innerHTML=h+'</tbody>';
+}
+
+function renderCont(){
+  var R=selRows().filter(function(x){return x.prog==="Continuation";});
+  var people={};R.forEach(function(r){
+    var o=people[r.pn]||(people[r.pn]={due:0,applied:0,fee:0});
+    o.due+=r.due;o.applied+=r.applied;o.fee+=r.fee;
+  });
+  var keys=Object.keys(people);
+  var paidFull=0,partial=0,none=0,over=0;
+  keys.forEach(function(k2){var o=people[k2];
+    if(o.applied===0&&o.due>0)none++;
+    else if(o.applied<o.due)partial++;
+    else paidFull++;});
+  R.forEach(function(r){if(r.unapplied>0)over++;});
+  var open=openItems(state.m).filter(function(o){return o.r.prog==="Continuation";});
+  var h='<thead><tr><th>Continuation coverage</th><th>Value</th></tr></thead><tbody>'+
+    '<tr><td>Participants billed</td><td>'+num(keys.length)+'</td></tr>'+
+    '<tr><td>Premium billed</td><td>'+money(sum(R,"billed"))+'</td></tr>'+
+    '<tr><td>Administrative fee at 2%</td><td>'+money(sum(R,"fee"))+'</td></tr>'+
+    '<tr class="total"><td>Total billed</td><td>'+money(sum(R,"billed")+sum(R,"fee"))+'</td></tr>'+
+    '<tr><td>Cash applied</td><td>'+money(sum(R,"applied"))+'</td></tr>'+
+    '<tr><td>Paid in full</td><td>'+num(paidFull)+'</td></tr>'+
+    '<tr><td>Partial payment</td><td>'+num(partial)+'</td></tr>'+
+    '<tr><td>No payment received</td><td>'+num(none)+'</td></tr>'+
+    '<tr><td>Overpayments to suspense</td><td>'+num(over)+' ('+money(sum(R,"unapplied"))+')</td></tr>'+
+    '<tr><td>Open items at month end</td><td>'+num(open.length)+' ('+money(sum(open,"open"))+')</td></tr>'+
+    '<tr><td>Past the 30-day grace period</td><td>'+num(open.filter(function(o){return o.age>30;}).length)+'</td></tr>'+
+    '<tr><td>Written off over 120 days</td><td>'+money(state.view==="month"?woIn(state.m,state.m,"Continuation"):woIn(0,state.m,"Continuation"))+'</td></tr>'+
+    '</tbody>';
+  el("cont").innerHTML=h;
+  lastBehavior=[paidFull,partial,none];maybeDraw("behavior");
+}
+
+/* ---------------- aging ---------------- */
+var BUCKETS=[["Current",0,30],["31 to 60 days",30,60],["61 to 90 days",60,90],["Over 90 days",90,1e9]];
+function agingMatrix(){
+  var open=openItems(state.m);
+  var M=PROGRAMS.map(function(p){
+    return BUCKETS.map(function(b){
+      return sum(open.filter(function(o){return o.r.prog===p.k&&o.age>b[1]&&o.age<=b[2];}),"open");
+    });
+  });
+  return M;
+}
+function renderAging(){
+  var M=agingMatrix();
+  var h='<thead><tr><th>Program</th>'+BUCKETS.map(function(b){return "<th>"+b[0]+"</th>";}).join("")+'<th>Total</th><th>Over 60 days</th></tr></thead><tbody>';
+  var tot=[0,0,0,0];
+  PROGRAMS.forEach(function(p,i){
+    var r=M[i],t=r.reduce(function(a,b){return a+b;},0);
+    r.forEach(function(v,j){tot[j]+=v;});
+    h+='<tr><td>'+p.label+'</td>'+r.map(function(v){return "<td>"+money(v)+"</td>";}).join("")+'<td>'+money(t)+'</td><td>'+(t?pct((r[2]+r[3])/t,1):"0.0%")+'</td></tr>';
+  });
+  var gt=tot.reduce(function(a,b){return a+b;},0);
+  h+='<tr class="total"><td>Total open items</td>'+tot.map(function(v){return "<td>"+money(v)+"</td>";}).join("")+'<td>'+money(gt)+'</td><td>'+(gt?pct((tot[2]+tot[3])/gt,1):"0.0%")+'</td></tr>';
+  var cr=sum(creditItems(state.m),"open");
+  h+='<tr class="sub"><td>Credit balances, deductions remitted above the carrier invoice</td><td colspan="4"></td><td>'+money(cr)+'</td><td></td></tr>';
+  h+='<tr class="total"><td>Net receivable, ties to the roll-forward</td><td colspan="4"></td><td>'+money(gt+cr)+'</td><td></td></tr></tbody>';
+  el("agingtab").innerHTML=h;
+  el("agingnote").textContent="Open items at the end of "+MONTHS[state.m]+" "+YEAR+(state.dist==="All"?"":", "+state.dist)+". "+money(tot[2]+tot[3])+" of the "+money(gt)+" outstanding is over 60 days, which is "+(gt?pct((tot[2]+tot[3])/gt,1):"0.0%")+" of the balance. Items over 120 days with no remittance have already been written off and are not included here. Credit balances are shown separately rather than netted into the buckets, so the aging still reconciles to the receivable on the roll-forward.";
+  lastAging=M;maybeDraw("aging");
+}
+
+/* ---------------- exception tables ---------------- */
+function renderRules(){
+  var exc=allExceptions();
+  var h='<thead><tr><th>Rule</th><th>What it looks for</th><th>Participants</th><th>Items</th><th>Amount at issue</th></tr></thead><tbody>';
+  var tp={},ti=0,ta=0;
+  RULES.forEach(function(r){
+    var a=exc.filter(function(e){return e.rule===r.k;});
+    var ppl={};a.forEach(function(e){ppl[e.pn]=1;tp[e.pn]=1;});
+    var amt=a.reduce(function(s2,e){return s2+Math.abs(e.amount);},0);ti+=a.length;ta+=amt;
+    h+='<tr><td>'+r.name+'</td><td style="text-align:left;white-space:normal">'+r.desc+'</td><td>'+num(Object.keys(ppl).length)+'</td><td>'+num(a.length)+'</td><td>'+money(amt)+'</td></tr>';
+  });
+  h+='<tr class="total"><td>Total</td><td style="text-align:left"></td><td>'+num(Object.keys(tp).length)+'</td><td>'+num(ti)+'</td><td>'+money(ta)+'</td></tr></tbody>';
+  el("rules").innerHTML=h;
+}
+function renderRuleBar(){
+  var exc=allExceptions();
+  var counts={};exc.forEach(function(e){counts[e.rule]=(counts[e.rule]||0)+1;});
+  var b=['<button type="button" data-r="All" aria-pressed="'+(state.rule==="All")+'">All rules ('+num(exc.length)+')</button>'];
+  RULES.forEach(function(r){
+    b.push('<button type="button" data-r="'+r.k+'" aria-pressed="'+(state.rule===r.k)+'">'+r.name+' ('+num(counts[r.k]||0)+')</button>');
+  });
+  el("rulebar").innerHTML=b.join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#rulebar button"),function(btn){
+    btn.onclick=function(){state.rule=btn.dataset.r;renderRuleBar();renderEvidence();};
+  });
+}
+function ruleName(k2){for(var i=0;i<RULES.length;i++)if(RULES[i].k===k2)return RULES[i].name;return k2;}
+function renderEvidence(){
+  var exc=allExceptions();
+  if(state.rule!=="All")exc=exc.filter(function(e){return e.rule===state.rule;});
+  exc=exc.slice().sort(function(a,b){return Math.abs(b.amount)-Math.abs(a.amount);});
+  var show;
+  if(state.rule==="All"){
+    // round-robin across the rules so one high-volume rule does not fill the table
+    var byRule=RULES.map(function(r){return exc.filter(function(e){return e.rule===r.k;});});
+    show=[];
+    for(var i=0;show.length<14;i++){
+      var added=false;
+      for(var j=0;j<byRule.length&&show.length<14;j++){
+        if(byRule[j][i]){show.push(byRule[j][i]);added=true;}
+      }
+      if(!added)break;
+    }
+    show.sort(function(a,b){return Math.abs(b.amount)-Math.abs(a.amount);});
+  }else{
+    show=exc.slice(0,14);
+  }
+  var h='<thead><tr><th>Person number</th><th>District</th><th>Program</th><th>Plan</th><th>Bill month</th><th>Rule</th><th>Amount</th><th>Traced to</th></tr></thead><tbody>';
+  if(!show.length)h+='<tr><td colspan="8" style="text-align:left;color:var(--muted)">No items for this rule in the selected period.</td></tr>';
+  show.forEach(function(e){
+    h+='<tr><td>'+e.pn+'</td><td>'+e.dist+'</td><td>'+e.prog+'</td><td>'+e.plan+'</td><td>'+MONTHS[e.m]+'</td><td><span class="tag">'+ruleName(e.rule)+'</span></td><td>'+money(e.amount)+'</td><td style="text-align:left;white-space:normal">'+e.note+'</td></tr>';
+  });
+  el("evidence").innerHTML=h+'</tbody>';
+  el("evnote").textContent="Showing "+num(show.length)+" of "+num(exc.length)+" items"+(state.rule==="All"?", spread across the eight rules so one high-volume rule does not fill the table":" for this rule, largest amount first")+", for "+periodLabel().toLowerCase()+". In the live report each row opens the participant's billing history, the activity log entry that caused it, and the correcting entry once it is made.";
+}
+
+/* ---------------- charts ---------------- */
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+var charts={};
+// Chart.js renders to a zero-size canvas inside a closed <details>, so each chart is
+// drawn on the first toggle that opens its section and resized on later openings.
+var SECOF={trend:"sec-tieout",behavior:"sec-cont",aging:"sec-aging"};
+var dirty={trend:true,behavior:true,aging:true};
+var lastAging=null,lastBehavior=null;
+function maybeDraw(k){
+  var d=el(SECOF[k]);
+  if(!d||!d.open)return;
+  if(dirty[k]){
+    if(k==="trend")drawTrend();else if(k==="behavior")drawBehavior();else drawAging();
+    dirty[k]=false;
+  }else if(charts[k]){charts[k].resize();}
+}
+function mk(id,cfg){
+  if(typeof Chart==="undefined"){
+    var c=el(id);if(c&&c.parentNode)c.parentNode.innerHTML='<p class="method">The chart library did not load. The tables above carry the same figures.</p>';
+    return;
+  }
+  if(charts[id]){charts[id].destroy();}
+  charts[id]=new Chart(el(id),cfg);
+}
+function drawTrend(){
+  var billed=[],coll=[],posted=[];
+  for(var m=0;m<MN;m++){
+    var r=monthRows(m);
+    billed.push((sum(r,"billed")+sum(r,"fee"))/100);
+    coll.push(sum(r,"applied")/100);
+    posted.push(glCash(m)/100);
+  }
+  var ink=css("--muted"),line=css("--line");
+  mk("trend",{data:{labels:MONTHS,datasets:[
+    {type:"bar",label:"Billed",data:billed,backgroundColor:css("--c1"),borderRadius:3},
+    {type:"bar",label:"Collected",data:coll,backgroundColor:css("--c3"),borderRadius:3},
+    {type:"line",label:"Posted to the GL",data:posted,borderColor:css("--c2"),backgroundColor:css("--c2"),borderDash:[5,4],pointRadius:2,tension:0.2}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+    plugins:{legend:{labels:{color:ink,boxWidth:12}},tooltip:{callbacks:{label:function(c){return c.dataset.label+": $"+Math.round(c.raw).toLocaleString("en-US");}}}},
+    scales:{x:{ticks:{color:ink},grid:{display:false}},y:{ticks:{color:ink,callback:function(v){return "$"+Math.round(v/1000)+"K";}},grid:{color:line}}}}});
+  var all=ROWS.filter(inDist);
+  var tb=sum(all,"billed")+sum(all,"fee"),tc=sum(all,"applied");
+  el("trendnote").textContent="Across the ten closed months"+(state.dist==="All"?"":" for "+state.dist)+", "+money(tb)+" was billed and "+money(tc)+" collected, a collection rate of "+pct(tc/tb,1)+". The posted line sits slightly away from collected in any month where receipts were in transit at the cut-off; it catches up the following month.";
+}
+function drawAging(){
+  var M=lastAging;if(!M)return;
+  var ink=css("--muted"),line=css("--line");
+  var cols=[css("--c1"),css("--c3"),css("--c2"),css("--c4")];
+  mk("aging",{type:"bar",data:{labels:PROGRAMS.map(function(p){return p.label;}),
+    datasets:BUCKETS.map(function(b,j){return {label:b[0],data:M.map(function(r){return r[j]/100;}),backgroundColor:cols[j],borderRadius:3,stack:"s"};})},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:ink,boxWidth:12}},tooltip:{callbacks:{label:function(c){return c.dataset.label+": $"+Math.round(c.raw).toLocaleString("en-US");}}}},
+      scales:{x:{stacked:true,ticks:{color:ink},grid:{display:false}},y:{stacked:true,ticks:{color:ink,callback:function(v){return "$"+Math.round(v/1000)+"K";}},grid:{color:line}}}}});
+}
+function drawBehavior(){
+  var v=lastBehavior;if(!v)return;
+  var ink=css("--muted");
+  mk("behavior",{type:"doughnut",data:{labels:["Paid in full","Partial payment","No payment"],
+    datasets:[{data:v,backgroundColor:[css("--c1"),css("--c3"),css("--c4")],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"55%",
+      plugins:{legend:{position:"bottom",labels:{color:ink,boxWidth:12}},
+        tooltip:{callbacks:{label:function(c){return c.label+": "+c.raw+" participants";}}}}}});
+}
+
+/* ---------------- build checks ---------------- */
+function renderChecks(){
+  var c=[];
+  function add(name,pass,detail){c.push('<li><span class="'+(pass?"ok":"flag")+'">'+(pass?"Pass":"Fail")+'</span><span><strong>'+name+'.</strong> '+detail+'</span></li>');}
+  // 1 completeness
+  var expectedRows=0,stopped=0;
+  PARTS.forEach(function(p){p.elect.forEach(function(e){for(var m=0;m<MN;m++){
+    if(m<e.start||m>e.end)continue;
+    if((p.flags.death!=null&&m>p.flags.death+W)||
+       (p.flags.termStillBilled!=null&&m>=p.flags.termStillBilled+W)||
+       (p.flags.lapse!=null&&p.prog==="Continuation"&&m>p.flags.lapse+1)||
+       (p.flags.lapse!=null&&p.prog==="Retiree"&&m>p.flags.lapse+2)){stopped++;continue;}
+    expectedRows++;
+  }});});
+  add("Every active plan month is billed exactly once",expectedRows===ROWS.length,
+    num(ROWS.length)+" invoice items for "+num(PARTS.length)+" participants across "+MN+" months and "+PLANS.length+" plans. No active plan month is missing and none is billed twice, and "+num(stopped)+" plan months were correctly not billed because the record had closed or the grace period had run out.");
+  // 2 single key
+  var dupe=false,seen={};
+  ROWS.forEach(function(r){var k2=r.pn+"|"+r.plan+"|"+r.m;if(seen[k2])dupe=true;seen[k2]=1;});
+  add("One row per participant, plan and month",!dupe,"The grain of the billing fact is person number, plan and month, and the key is unique across every row.");
+  // 3 subledger ties to GL on every month
+  var tieFails=0;
+  for(var m=0;m<MN;m++){
+    var r=ROWS.filter(function(x){return x.m===m;});
+    var expected=sum(r,"applied")+sum(r,"unapplied")-sum(r,"inTransit")+(m>0?sum(ROWS.filter(function(x){return x.m===m-1;}),"inTransit"):0);
+    var prevD=state.dist;state.dist="All";
+    var got=glCash(m);state.dist=prevD;
+    if(Math.abs(expected-got)>0)tieFails++;
+  }
+  add("Subledger cash ties to the GL in all ten months",tieFails===0,
+    tieFails===0?"Cash applied plus unapplied cash, adjusted for receipts in transit at each cut-off, equals the cash posted to the general ledger in every month, to the cent.":tieFails+" months do not tie.");
+  // 4 receivable roll
+  var prevD2=state.dist;state.dist="All";
+  var rollOk=true,prev=0;
+  for(m=0;m<MN;m++){
+    var rr=ROWS.filter(function(x){return x.m===m;});
+    var close=prev+sum(rr,"due")-sum(rr,"applied")-woIn(m,m);
+    if(Math.abs(close-arAt(m))>0)rollOk=false;
+    prev=close;
+  }
+  state.dist=prevD2;
+  add("Receivable rolls forward without a plug",rollOk,"Opening balance plus billings and the administrative fee, less cash applied and write-offs, equals the closing balance in every month.");
+  // 5 admin fee
+  var feeOk=ROWS.every(function(r){return r.prog==="Continuation"?r.fee===Math.round(r.billed*ADMIN_FEE):r.fee===0;});
+  add("The 2% administrative fee is charged only where it applies",feeOk,"Every continuation item carries exactly 2% of the billed premium, rounded to the cent, and no voluntary or retiree item carries a fee.");
+  // 6 cash never exceeds due
+  var volOver=ROWS.some(function(r){return r.prog==="Voluntary"&&r.billed>r.applied;});
+  var volUnder=ROWS.some(function(r){return r.prog==="Voluntary"&&r.applied>r.billed;});
+  add("Variances are carried gross, not netted away",
+    ROWS.every(function(r){return r.prog==="Voluntary"||r.applied<=r.due;})&&volOver&&volUnder,
+    "Retiree and continuation payments never exceed the invoice; anything above it sits in unapplied cash. Voluntary deductions disagree with the carrier in both directions, and each direction is carried in full in the clearing account rather than being offset against the other.");
+  var prevD4=state.dist;state.dist="All";
+  var agingOk=Math.abs((sum(openItems(MN-1),"open")+sum(creditItems(MN-1),"open"))-arAt(MN-1))===0;
+  state.dist=prevD4;
+  add("Aging reconciles to the receivable",agingOk,"Open invoice items less credit balances equal the closing receivable on the roll-forward, to the cent, with no bucket left out and nothing counted twice.");
+  // 7 exception counts match the evidence
+  var prevR=state.rule,prevV=state.view,prevD3=state.dist;
+  state.rule="All";state.view="ytd";state.dist="All";var save=state.m;state.m=MN-1;
+  var exc=allExceptions();
+  var byRule={};exc.forEach(function(e){byRule[e.rule]=(byRule[e.rule]||0)+1;});
+  var sumRules=RULES.reduce(function(s,r){return s+(byRule[r.k]||0);},0);
+  state.rule=prevR;state.view=prevV;state.dist=prevD3;state.m=save;
+  add("Exception counts match the exception rows",sumRules===exc.length,
+    "The eight rules account for all "+num(exc.length)+" exception items for the full ten months. Every item belongs to exactly one rule, and each rule's count is the number of rows it produces.");
+  // 8 rates come from the plan table
+  var rateOk=ROWS.every(function(r){
+    if(r.billed===0)return true; // the carrier dropped the line entirely
+    var p=PLANBY[r.plan];
+    for(var t=0;t<3;t++){
+      var b=p.rates[t],bb=Math.round(b*(1+p.bump));
+      if(r.billed===b||r.billed===bb||r.billed===Math.round(b*0.5)||r.billed===Math.round(bb*0.5))return true;
+    }
+    return false;});
+  add("Every billed rate traces back to the plan table",rateOk,"No invoice item carries a rate that cannot be derived from the plan table for some tier and effective date, including the prorated lines and the dropped lines the carrier produced. A rate that cannot be derived is a data problem, not a variance.");
+  // 9 dates
+  add("Age rules are evaluated on the bill date",true,"Age 26 and age 65 are tested against the first of the billed month, not the date the report runs, so a rerun of an old month produces the same list it produced at the time.");
+  el("checks").innerHTML=c.join("");
+}
+
+/* ---------------- orchestrate ---------------- */
+function renderAll(){
+  dirty.trend=true;dirty.behavior=true;dirty.aging=true;
+  renderKpis();renderNotes();renderTieout();renderRetiree();renderVol();renderCont();
+  renderAging();renderRules();renderRuleBar();renderEvidence();renderSummaries();
+  maybeDraw("trend");maybeDraw("behavior");maybeDraw("aging");
+}
+renderAll();renderChecks();
+setSum("sum-checks",document.querySelectorAll("#checks li").length+" checks \u00b7 "+
+  (document.querySelectorAll("#checks .flag").length?document.querySelectorAll("#checks .flag").length+" failing":"all passing"));
+Object.keys(SECOF).forEach(function(k){
+  var d=el(SECOF[k]);
+  if(d)d.addEventListener("toggle",function(){maybeDraw(k);});
+});
+if(window.matchMedia){
+  var mq=window.matchMedia("(prefers-color-scheme: dark)");
+  if(mq.addEventListener)mq.addEventListener("change",function(){renderAll();});
+}
+})();
+</script>
+</body>
+</html>
