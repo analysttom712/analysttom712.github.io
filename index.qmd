@@ -20,7 +20,7 @@ Data analyst · reconciliation, Power BI, Power Query and enterprise BI reportin
 
 ::: {.kpis}
 ::: {.kpi}
-**5+ days → 3 hours**
+**Every difference explained**
 [a monthly reconciliation, rebuilt in Power BI]{.k}
 :::
 ::: {.kpi}

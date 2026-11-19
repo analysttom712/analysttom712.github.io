@@ -1,15 +1,15 @@
 ---
 description: "A benefits receivables reconciliation in Power BI, then again in Python and SQL, on synthetic data: every difference gets a cause and a next step."
 title: "Benefits receivables reconciliation"
-subtitle: "Cut a monthly reconciliation from 5+ business days to about 3 hours at work. Shown here on a synthetic scenario in Power BI, then checked in Python and SQL"
+subtitle: "A benefits receivables reconciliation on synthetic data in Power BI, then checked in Python and SQL"
 lightbox: true
 ---
 
 ## Problem
 
-A benefits receivables reconciliation checks that what was billed to retirees and former employees matches what they paid and what reached the general ledger. In this scenario the numbers come from seven reports that rarely agree on the first try. Usually it's timing: a payment arrives one day and posts days later, or a death is reported months after it happened.
+A benefits receivables reconciliation checks that what was billed to retirees and former employees matches what they paid and what reached the general ledger. In this scenario the numbers come from several monthly reports that rarely agree on the first try. Usually it's timing: a payment arrives one day and posts days later, or a death is reported months after it happened.
 
-At work, a Power BI model I built cut a reconciliation like this from 5+ business days to about 3 hours. This page rebuilds the problem on made-up data, so I can show how it works. Claude (AI) wrote the Python, SQL and DAX at my direction; I set the vendor formats, matching rules and checks, and reviewed every result.
+Based on work built in Human Resources, reconciling benefits billing and payments for an employer group. This page rebuilds the problem on made-up data, so I can show how it works. Claude (AI) wrote the Python, SQL and DAX at my direction; I set the vendor formats, matching rules and checks, and reviewed every result.
 
 ## Data
 
@@ -46,7 +46,6 @@ Every problem here is planted in this exercise, with a known answer key: late-re
 | Planted problems | All 12 kinds in the answer key surfaced, with no false alarms |
 | Person-months flagged for action | 157, each with a cause and a next step |
 | Retiree account | ($500.00) opening to $2,000.00 ending, explained item by item |
-| Reconciliation time (the work version) | 5+ business days → about 3 hours |
 
 ![Six tie-outs to the general ledger, synthetic data. $0.00 means two sources agree. Detail vs billing is billing that never reached the ledger; checks vs log is timing that clears the next month; the year's ($960.00) is checks received in late December that post in January 2026.](../images/recon-tieouts.jpg){fig-alt="Monthly table comparing billing, ledger detail, three payment channels and the check log against the general ledger for 2025; most cells are $0.00."}
 
@@ -55,7 +54,7 @@ Every problem here is planted in this exercise, with a known answer key: late-re
 To check the Power BI answers a second way, I rebuilt the reconciliation from the raw reports in Python and SQL.
 
 1. **Extract.** Python reads the two vendor PDFs (synthetic, printed from the same made-up data in two different layouts). Every file has to match its own footer (record count and total) before it's loaded.
-2. **Match.** In this scenario, neither vendor sends a person number, and both show only the last 4 of the SSN. Lines match on the last 4 plus first and last name, then on the last 4 plus last name to catch a nickname or typo. A line counts only when exactly one person fits; anything else is set aside with the reason, on the load checks report.
+2. **Match.** In this scenario, neither vendor sends a person number, and both show only the last 4 of an identifier (synthetic identifiers throughout; no real SSNs of any kind are used). Lines match on the last 4 plus first and last name, then on the last 4 plus last name to catch a nickname or typo. A line counts only when exactly one person fits; anything else is set aside with the reason, on the load checks report.
 3. **Reshape.** The HR data is stored as date ranges, the way HR systems keep history: 9,344 monthly billing rows become 901 ranges. The load rebuilds each month from the ranges and confirms it equals the original report.
 4. **Report.** Six SQL reports, each one query with a month parameter: roll-forward, tie-outs, exceptions, exceptions by cause, late rate changes, and load and data quality checks.
 

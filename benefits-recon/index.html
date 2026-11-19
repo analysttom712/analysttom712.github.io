@@ -113,18 +113,18 @@ details.sec[open]>summary .stitle::before{transform:rotate(90deg)}
 
   <h1>Monthly benefits premium reconciliation pack</h1>
   <p class="sub">A sample of the reporting I build for benefits operations: voluntary payroll deductions matched to carrier billing each pay period, a retiree medical and dental premium subledger that ties to the general ledger, continuation coverage receivables with the 2% administrative fee, and an exception list that traces every variance down to one participant.</p>
-  <div class="banner"><strong>Invented data, fictional groups.</strong> Every participant, district, plan, person number and dollar figure on this page is made up by a seeded generator that runs in your browser. Nothing here comes from any employer, carrier, plan or person, and no employer is named or described. Reporting month is October 2026; January through October are closed.</div>
+  <div class="banner"><strong>Invented data, fictional groups.</strong> Every participant, division, plan, person number and dollar figure on this page is made up by a seeded generator that runs in your browser. Nothing here comes from any employer, carrier, plan or person, and no employer is named or described. Reporting month is October 2026; January through October are closed.</div>
 
   <div class="controls" role="group" aria-label="Pack filters">
     <div><label for="month">Reporting month</label><select id="month"></select></div>
-    <div><label for="district">District</label><select id="district"></select></div>
+    <div><label for="district">Division</label><select id="district"></select></div>
     <div><label>Period</label><div class="seg" id="view"><button type="button" data-v="month" aria-pressed="true">Month</button><button type="button" data-v="ytd" aria-pressed="false">Year to date</button></div></div>
   </div>
 
   <div class="kpis" id="kpis"></div>
 
   <h2>The data model behind it</h2>
-  <p class="sub">A star schema. Every relationship is one-to-many in a single direction, from the dimension to the fact, and every fact joins on the person number. Keeping the direction single means a filter on a district or a plan reaches the facts and stops there, instead of travelling back up another table and widening the result.</p>
+  <p class="sub">A star schema. Every relationship is one-to-many in a single direction, from the dimension to the fact, and every fact joins on the person number. Keeping the direction single means a filter on a division or a plan reaches the facts and stops there, instead of travelling back up another table and widening the result.</p>
   <div class="card">
     <div class="schemawrap">
     <svg class="schema" viewBox="0 0 980 520" role="img" aria-label="Star schema diagram: five dimension tables joined one-to-many to four fact tables on person number">
@@ -145,7 +145,7 @@ details.sec[open]>summary .stitle::before{transform:rotate(90deg)}
           <text x="34" y="66" font-weight="600">Dim Participant</text><text x="34" y="84" fill="var(--muted)">person number (key)</text>
           <text x="34" y="156" font-weight="600">Dim Contact / Dependent</text><text x="34" y="174" fill="var(--muted)">relationship, date of birth</text>
           <text x="34" y="246" font-weight="600">Dim Plan</text><text x="34" y="264" fill="var(--muted)">plan, tier, rate, effective date</text>
-          <text x="34" y="336" font-weight="600">Dim District</text><text x="34" y="354" fill="var(--muted)">group, region, billing cycle</text>
+          <text x="34" y="336" font-weight="600">Dim Division</text><text x="34" y="354" fill="var(--muted)">group, region, billing cycle</text>
           <text x="34" y="426" font-weight="600">Dim Date</text><text x="34" y="444" fill="var(--muted)">marked as the date table</text>
         </g>
         <g fill="var(--soft)" stroke="var(--line)" stroke-width="1.5"><rect x="360" y="196" width="200" height="140" rx="10"/></g>
@@ -171,7 +171,7 @@ details.sec[open]>summary .stitle::before{transform:rotate(90deg)}
   </div>
 
   <h2>The pack</h2>
-  <p class="sub">Each section below is closed until you open it. The headline on every one is live: change the month, the district or the period above and every summary updates, whether the section is open or not.</p>
+  <p class="sub">Each section below is closed until you open it. The headline on every one is live: change the month, the division or the period above and every summary updates, whether the section is open or not.</p>
 
   <details class="sec" id="sec-notes">
     <summary><h2 class="stitle">What the close found</h2><span class="sum" id="sum-notes"></span></summary>
@@ -262,7 +262,7 @@ details.sec[open]>summary .stitle::before{transform:rotate(90deg)}
   <details class="sec" id="sec-checks">
     <summary><h2 class="stitle">Build checks on this page</h2><span class="sum" id="sum-checks"></span></summary>
     <div class="secbody">
-      <p class="sub">These run every time the page loads, against the invented data above. They are the same shape as the checks I run on a real pack before it is released.</p>
+      <p class="sub">These run every time the page loads, against the invented data above. They are the same shape as the checks a monthly pack should pass before release.</p>
       <ul class="checks" id="checks"></ul>
     </div>
   </details>
@@ -588,7 +588,7 @@ function allExceptions(){
 var mSel=el("month"),dSel=el("district");
 for(var k=0;k<MN;k++){var o=document.createElement("option");o.value=k;o.textContent=MONTHS[k]+" "+YEAR;mSel.appendChild(o);}
 mSel.value=state.m;
-["All"].concat(DISTRICTS).forEach(function(d){var o2=document.createElement("option");o2.value=d;o2.textContent=d==="All"?"All districts":d;dSel.appendChild(o2);});
+["All"].concat(DISTRICTS).forEach(function(d){var o2=document.createElement("option");o2.value=d;o2.textContent=d==="All"?"All divisions":d;dSel.appendChild(o2);});
 mSel.onchange=function(){state.m=+mSel.value;renderAll();};
 dSel.onchange=function(){state.dist=dSel.value;renderAll();};
 Array.prototype.forEach.call(document.querySelectorAll("#view button"),function(b){
@@ -889,13 +889,13 @@ function renderEvidence(){
   }else{
     show=exc.slice(0,14);
   }
-  var h='<thead><tr><th>Person number</th><th>District</th><th>Program</th><th>Plan</th><th>Bill month</th><th>Rule</th><th>Amount</th><th>Traced to</th></tr></thead><tbody>';
+  var h='<thead><tr><th>Person number</th><th>Division</th><th>Program</th><th>Plan</th><th>Bill month</th><th>Rule</th><th>Amount</th><th>Traced to</th></tr></thead><tbody>';
   if(!show.length)h+='<tr><td colspan="8" style="text-align:left;color:var(--muted)">No items for this rule in the selected period.</td></tr>';
   show.forEach(function(e){
     h+='<tr><td>'+e.pn+'</td><td>'+e.dist+'</td><td>'+e.prog+'</td><td>'+e.plan+'</td><td>'+MONTHS[e.m]+'</td><td><span class="tag">'+ruleName(e.rule)+'</span></td><td>'+money(e.amount)+'</td><td style="text-align:left;white-space:normal">'+e.note+'</td></tr>';
   });
   el("evidence").innerHTML=h+'</tbody>';
-  el("evnote").textContent="Showing "+num(show.length)+" of "+num(exc.length)+" items"+(state.rule==="All"?", spread across the eight rules so one high-volume rule does not fill the table":" for this rule, largest amount first")+", for "+periodLabel().toLowerCase()+". In the live report each row opens the participant's billing history, the activity log entry that caused it, and the correcting entry once it is made.";
+  el("evnote").textContent="Showing "+num(show.length)+" of "+num(exc.length)+" items"+(state.rule==="All"?", spread across the eight rules so one high-volume rule does not fill the table":" for this rule, largest amount first")+", for "+periodLabel().toLowerCase()+". In a pack like this, each row opens the participant's billing history, the activity log entry that caused it, and the correcting entry once it is made.";
 }
 
 /* ---------------- charts ---------------- */
