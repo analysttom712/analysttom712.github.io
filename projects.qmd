@@ -1,5 +1,5 @@
 ---
-description: "Portfolio projects on synthetic and public sample data: reconciliation in Power BI, Python and SQL, FP&A variance, AI operations and AI guardrails."
+description: "Portfolio projects on synthetic and public sample data: reconciliation in Power BI, Python and SQL, a Total Rewards analytics platform in progress, FP&A variance, AI operations and AI guardrails."
 title: "Projects"
 ---
 
@@ -13,6 +13,12 @@ Every project uses synthetic data or public sample data. Where a project mirrors
 Billing, three payment channels, a payment log and the ledger, tied out monthly, with every difference given a cause. The same reconciliation is rebuilt in Python and SQL from the vendor PDFs, with matching by SSN last 4 and 13 automated checks.
 
 [Power BI]{.tag} [DAX]{.tag} [Python]{.tag} [SQL]{.tag}
+:::
+::: {.card-p}
+### [Total Rewards analytics platform](projects/total-rewards-platform.qmd)
+In progress. A year-long build in public: synthetic HR, payroll and benefits data from raw extracts to dbt-tested models to Power BI, run like a job with tickets, reviews and incident drills.
+
+[Python]{.tag} [dbt]{.tag} [SQL]{.tag} [Power BI]{.tag} [AWS]{.tag}
 :::
 ::: {.card-p}
 ### [AI operations and enablement](projects/ai-operations.qmd)

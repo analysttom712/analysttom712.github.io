@@ -1,0 +1,86 @@
+---
+description: "A year-long build in public: synthetic HR, payroll and benefits data taken from raw extracts to tested dbt models to Power BI, run like a job with tickets, reviews and incident drills."
+title: "Total Rewards analytics platform"
+subtitle: "A year-long, job-style build from analyst to analytics engineer: synthetic HR, payroll and benefits data, from raw extracts to tested models to Power BI"
+---
+
+::: {.sub}
+[In progress]{.tag} Building in public since November 2026 · **Aiming at:** Analytics Engineer · Total Rewards / HR Analytics
+:::
+
+::: {.kpis}
+::: {.kpi}
+**5**
+[business questions it's being built to answer]{.k}
+:::
+::: {.kpi}
+**~2M rows**
+[target for the data generator, all synthetic]{.k}
+:::
+::: {.kpi}
+**9 milestones**
+[from setup to a public demo]{.k}
+:::
+::: {.kpi}
+**0**
+[real records, ever]{.k}
+:::
+:::
+
+## Problem
+
+A Total Rewards team asks questions that cross systems: are we paying within range, what do benefits cost per employee, does payroll tie to the ledger, does the carrier's file match HR? I've answered some of these in my day job, such as tying benefits billing and payments to the general ledger in Power BI. This project builds everything upstream of the report, so the numbers arrive tested and traceable.
+
+::: {.origin}
+The company, people and pay are invented. Northwind Mutual is fictional, and every record comes from a Python generator with a fixed seed.
+:::
+
+## The product
+
+**Business questions it's being built to answer:** pay-range position (compa-ratio), benefits cost per employee, payroll-to-ledger tie-out, carrier file reconciliation, and a total rewards statement per employee.
+
+**Planned pipeline:** HCM-style extract files and a mock API → Python ingestion → AWS S3, Glue and Athena → dbt models with automated data-quality tests → Power BI.
+
+The generator is planned to reach about 2 million rows: hires, terms, rehires, retirees, salary history, benefit elections, payroll, 401(k), PTO and general ledger entries, with planted errors and an answer key to check them against. Today it creates one reproducible employee.
+
+[Python]{.tag} [SQL]{.tag} [dbt]{.tag} [Power BI]{.tag} [AWS]{.tag} [GitHub Actions]{.tag}
+
+## How it's run
+
+I run it like a job on an agile team. Unlike my other projects, where AI wrote the code at my direction, here I write the code myself to learn it. Claude (AI) acts as my lead engineer: it writes the tickets and setup files, teaches each concept, gives hints and reviews my pull requests.
+
+| Team practice | How it shows up here |
+|---|---|
+| Backlog | GitHub Issues written as business asks, with acceptance criteria, a learning objective and an estimate |
+| Daily standup | Each two-hour session opens with yesterday, today's ticket and blockers |
+| Definition of done | Checks pass, safety scan, pull request reviewed and merged, learning log updated, post drafted |
+| Sprints | Planned: two-week reviews: what shipped, skills update, next stretch goal |
+| Incidents | Starting in M1: planned drills: the pipeline is broken on purpose; I troubleshoot, write a blameless postmortem and add a test that would have caught it |
+
+## Roadmap and progress
+
+| Milestone | Focus | Build status | Certification exam |
+|---|---|---|---|
+| M0 | Git, GitHub, project setup | Done | |
+| M1 | Python data generator | In progress | GitHub Foundations: planned |
+| M2 | SQL for analytics engineering | Planned | |
+| M3 | dbt models, tests, snapshots | Planned | |
+| M4 | Power BI model and dashboards, row-level security | Planned | PL-300: planned |
+| M5 | CI with GitHub Actions | Planned | |
+| M6 | AWS: S3, Glue, Athena, Lambda | Planned | AWS Cloud Practitioner: planned |
+| M7 | Incremental loads, PySpark | Planned | DP-600 (optional): planned |
+| M8 | Polish, demo, interview prep | Planned | dbt Analytics Engineering: planned |
+
+Screenshots are added as each milestone ships, starting with the dbt lineage graph at M3.
+
+## Build log
+
+| Date | What shipped |
+|---|---|
+| Nov 22, 2026 | **Day 1.** Repo, folder structure and Python environment set up; first script generates a reproducible fake employee. [Day 1 commit](https://github.com/analysttom712/total-rewards-analytics/commit/4922489) |
+
+## Why I'm building it
+
+It turns my background in benefits, payroll and accounting reconciliation into engineering work an employer can inspect: every change and fix is in a public commit history.
+
+[View the repository on GitHub](https://github.com/analysttom712/total-rewards-analytics)
