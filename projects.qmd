@@ -1,5 +1,5 @@
 ---
-description: "Portfolio projects on synthetic and public sample data: reconciliation in Power BI, Python and SQL, a Total Rewards analytics platform in progress, FP&A variance, AI operations and AI guardrails."
+description: "Portfolio projects on synthetic and public sample data: reconciliation in Power BI, Python and SQL, a Total Rewards analytics platform in progress, FP&A variance and AI operations."
 title: "Projects"
 ---
 
@@ -31,11 +31,5 @@ How I run AI agents as a team: one job per agent, read-only reviewers, four gate
 Actual versus budget and a run rate forecast on Microsoft's AdventureWorks sample.
 
 [SQL Server]{.tag} [Power BI]{.tag} [DAX]{.tag}
-:::
-::: {.card-p}
-### [Using AI with guardrails](projects/ai-guardrails.qmd)
-How I set rules for AI tools at my own small company, and what happened when one slipped.
-
-[AI governance]{.tag} [Change control]{.tag}
 :::
 :::

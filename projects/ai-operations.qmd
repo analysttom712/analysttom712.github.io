@@ -19,7 +19,6 @@ I ran my portfolio work this way. AI agents did the building and reviewing. I se
 | Builder (main session) | Writes the data, code and pages, and runs the checks | Publish, push, change settings or accept terms without my yes |
 | Employer risk panel | Reads everything as my employer's HR, compliance and external auditors would | Edit or publish |
 | Readiness reviewers | A resume reviewer, a senior recruiter, a hiring manager and a web developer: is the portfolio ready to show? | Edit or publish |
-| Brand reviewer (company work) | Weekly and pre-publish scorecard for my company's site and content | Edit or publish |
 
 **Rules.** Written down once, loaded into every session, and applied the same way every time. A few of them:
 
@@ -70,10 +69,6 @@ Each entry is a rule, what happened, and what was done. It never says what the r
 13. **Reviewers advise; I decide.** A reviewer asked whether some counts and titles were too realistic. *Caught by the employer risk panel.* Not changed on the reviewer's word. I confirmed they were invented, then it went ahead.
 14. **Nothing public without my yes.** The site was ready to publish. *Caught at Gate 4.* Held: "Let me look first" stopped the publish.
 :::
-
-## The company chapter
-
-The same approach runs at the two-person company I co-founded: a written AI policy that went through four versions in its first week, least access for the AI in the cloud, change control through a test site, and one real incident contained and recorded in under an hour. [Read that chapter →](ai-guardrails.qmd#where-it-comes-from)
 
 ## What I'd tell a team rolling out AI
 
