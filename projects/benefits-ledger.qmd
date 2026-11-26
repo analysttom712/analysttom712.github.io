@@ -31,7 +31,7 @@ Every problem here is planted in this exercise, with a known answer key: late-re
 
 ## Approach
 
-1. Combined each report's monthly files in Power Query and built a star schema: dimensions for person, month and account; facts for billing, receipts, the payment log and the ledger.
+1. Combined each report's monthly files in Power Query and built a star schema: dimensions for person, month, account and dependent; facts for billing, receipts, the payment log, ledger postings and ledger detail; and a person-month fact that puts them all on one row.
 2. Matched every person and month across all sources, so someone missing from one side still shows up.
 3. Designed matching rules that give each difference one cause and a next step, most specific first.
 4. Tied the ledger out to every source: a roll-forward (opening + activity = ending), billing against the ledger detail and the billing report, each payment channel's deposit against its report (vendors matched by draft month), and checks against the payment log.
