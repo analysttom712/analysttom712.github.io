@@ -29,7 +29,7 @@ subtitle: "A year-long, job-style build from analyst to analytics engineer: synt
 
 ## Problem
 
-A Total Rewards team asks questions that cross systems: are we paying within range, what do benefits cost per employee, does payroll tie to the ledger, does the carrier's file match HR? I've answered some of these in my day job, such as tying benefits billing and payments to the general ledger in Power BI. This project builds everything upstream of the report, so the numbers arrive tested and traceable.
+A Total Rewards team asks questions that cross systems: are we paying within range, what do benefits cost per employee, does payroll tie to the ledger, does the carrier's file match HR? My [benefits reconciliation project](benefits-ledger.qmd) answers one of them, tying billing and payments to the ledger in Power BI. This project builds everything upstream of the report, so the numbers arrive tested and traceable.
 
 ::: {.origin}
 The company, people and pay are invented. Northwind Mutual is fictional, and every record comes from a Python generator with a fixed seed.
@@ -43,7 +43,7 @@ The company, people and pay are invented. Northwind Mutual is fictional, and eve
 
 The generator is planned to reach about 2 million rows: hires, terms, rehires, retirees, salary history, benefit elections, payroll, 401(k), PTO and general ledger entries, with planted errors and an answer key to check them against. Today it creates one reproducible employee.
 
-[Python]{.tag} [SQL]{.tag} [dbt]{.tag} [Power BI]{.tag} [AWS]{.tag} [GitHub Actions]{.tag}
+[Python (learning)]{.tag} [SQL]{.tag} [dbt]{.tag} [Power BI]{.tag} [AWS]{.tag} [GitHub Actions]{.tag}
 
 ## How it's run
 
