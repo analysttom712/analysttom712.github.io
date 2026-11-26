@@ -37,6 +37,8 @@ Every problem here is planted in this exercise, with a known answer key: late-re
 4. Tied the ledger out to every source: a roll-forward (opening + activity = ending), billing against the ledger detail and the billing report, each payment channel's deposit against its report (vendors matched by draft month), and checks against the payment log.
 5. Made it easy to use: a start page, tips on every page, and a subheader that always says which filters are on.
 
+![The model, synthetic data: four dimensions (person, month, account, dependent) and six fact tables. Fact Person Month puts billed, drafted, paid and ledger amounts for each person and month on one row, so every difference can get a cause. All totals come from the measures table.](../images/recon-model.png){fig-alt="Power BI model view: Dim Person, Dim Month, Dim Account and Dim Dependent related one-to-many to Fact Billing, Fact Receipts, Fact Payment Log, Fact Ledger Postings, Fact Ledger Detail and Fact Person Month, with a _Measures table."}
+
 ![Exceptions on synthetic data: 157 person-months grouped by cause, each with a next step on the report page. Amounts are paid minus billed: parentheses mean underpaid, a plus means collected and owed back. Costing not keyed shows $0.00 because the person paid; the gap is on the ledger side.](../images/recon-exceptions.jpg){fig-alt="Table of exception causes with counts and amounts: costing not keyed 51, billed after death 45, retro-canceled not adjusted 27, drafted after removal 18, returned draft 8, missed payment 6, drafted in error 1, short or unpaid 1; total 157."}
 
 ## Results
