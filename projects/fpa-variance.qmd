@@ -53,6 +53,10 @@ SQL Server (SSMS) · Power BI · DAX
 - [The Gap Between Revenue and Expenses. What the Data Said](https://www.linkedin.com/pulse/gap-between-revenue-expenses-what-data-said-thomas-baynum-cp2be)
 - [I Almost Posted the Wrong Numbers: What a Power BI Project Taught Me About Trusting Data](https://www.linkedin.com/pulse/i-almost-posted-wrong-numbers-what-power-bi-project-taught-baynum-ewhke)
 
+## Repo
+
+[The Power BI project (PBIP and PBIX), SQL Server queries, DAX and a whole-database deeper model on GitHub](https://github.com/analysttom712/fpa-variance-forecast)
+
 ## The DAX
 
 All 35 measures, exported straight from the model: [fpa-measures.dax](../code/fpa-measures.dax). The fix for the period-count error is the pair `Original Variance` (actuals against budget) and `Variance` (comparable actuals against budget), kept side by side on purpose.
