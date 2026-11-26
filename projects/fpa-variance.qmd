@@ -43,6 +43,20 @@ A backtested forecast (2013 predicted as 2012 plus the prior year's change) land
 
 ![Liquidity and profitability ratios by year, on November 30 balances and January to November activity.](../images/fpa-ratios.webp){fig-alt="Dashboard of current and quick ratios, net and gross profit margin, inventory turnover and current assets versus liabilities, 2011 to 2013."}
 
+## A deeper model
+
+I then had Claude (AI) profile the whole database before modeling and rebuild the model from what it found. Every amount is in USD, returns and discounts are netted out of sales, intercompany sales are shown separately, and each posting sits in its true month. The results match SQL Server to the dollar. On that basis, gross margin rose from 2011 to 2013, but operating margin fell from 26.4% to 22.0% (January to November each year), because operating expenses grew faster than sales. The SQL, DAX and a checklist of what to verify are in the [repo's deeper-model folder](https://github.com/analysttom712/fpa-variance-forecast/tree/main/deeper-model).
+
+![P&L in USD, January to November each year. Sales grew 69% from 2011 to 2013 and operating expenses grew 95%, so operating margin fell from 26.38% to 22.00%.](../images/fpa-deeper-1-pnl.jpg){fig-alt="Matrix of net sales down to net income by year, a combo chart of net sales and operating expenses with gross and operating margin lines, and a growth table for 2012 and 2013."}
+
+![2013 operating margin by organization: Southwest earned 36.1%, while Southeast lost money at -8.0%.](../images/fpa-deeper-2-organizations.jpg){fig-alt="Table of nine organizations with region, currency, ownership, net sales, operating profit and margin, next to a bar chart of operating margin by organization."}
+
+![Operating expenses by department and by account, against headcount. Expenses roughly doubled while headcount rose 49%.](../images/fpa-deeper-3-cost-drivers.jpg){fig-alt="Two matrices of operating expenses by department and by account for 2011 to 2013, and a combo chart of operating expenses and headcount."}
+
+![Budget versus actual for 2011, only where a budget exists. Revenue came in 9.7% under budget and expenses 2.4% under.](../images/fpa-deeper-4-budget.jpg){fig-alt="Card showing a variance of negative 1,812,889 dollars and a matrix of comparable actual, budget and variance by account type."}
+
+![Data checks: 39,409 rows loaded, no postings without an exchange rate, the balance sheet balances every period, and rows per period by year.](../images/fpa-deeper-5-checks.jpg){fig-alt="Three check cards reading 39,409, 0 and 0, and a matrix of row counts by fiscal year and month."}
+
 ## Tools
 
 SQL Server (SSMS) · Power BI · DAX
