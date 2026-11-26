@@ -3,6 +3,7 @@ description: "How to reach Thomas Baynum."
 title: "Contact"
 ---
 
-Please reach out on LinkedIn: [linkedin.com/in/thomas-baynumacct](https://www.linkedin.com/in/thomas-baynumacct)
+- Email: [thomasbaynum.dev@gmail.com](mailto:thomasbaynum.dev@gmail.com)
+- LinkedIn: [linkedin.com/in/thomas-baynumacct](https://www.linkedin.com/in/thomas-baynumacct)
 
-Based in the Columbia, SC area. Open to remote, hybrid or on-site roles nearby.
+Open to remote, hybrid or on-site roles.

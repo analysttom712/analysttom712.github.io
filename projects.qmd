@@ -3,22 +3,22 @@ description: "Portfolio projects on synthetic and public sample data: reconcilia
 title: "Projects"
 ---
 
-Every project uses synthetic data or public sample data. Where a project mirrors work I do on the job, the data is invented so that no employer or member information appears.
+Every project is built from scratch as a portfolio exercise, on invented data or public sample data.
 
 ## All projects
 
 ::: {.cards}
 ::: {.card-p}
 ### [Benefits receivables reconciliation](projects/benefits-ledger.qmd)
-Billing, three payment channels, a payment log and the ledger, tied out monthly, with every difference given a cause. The same reconciliation is rebuilt in Python and SQL from the vendor PDFs, with matching by SSN last 4 and 13 automated checks.
+Billing, three payment channels, a payment log and the ledger, tied out monthly, with every difference given a cause. The same reconciliation is checked again in Python and SQL from the vendor PDFs, with matching by SSN last 4 and 13 automated checks.
 
-[Power BI]{.tag} [DAX]{.tag} [Python]{.tag} [SQL]{.tag}
+[Power BI]{.tag} [DAX]{.tag} [Python (AI-assisted)]{.tag} [SQL]{.tag}
 :::
 ::: {.card-p}
 ### [Total Rewards analytics platform](projects/total-rewards-platform.qmd)
 In progress. A year-long build in public: synthetic HR, payroll and benefits data from raw extracts to dbt-tested models to Power BI, run like a job with tickets, reviews and incident drills.
 
-[Python]{.tag} [dbt]{.tag} [SQL]{.tag} [Power BI]{.tag} [AWS]{.tag}
+[Python (learning)]{.tag} [dbt]{.tag} [SQL]{.tag} [Power BI]{.tag} [AWS]{.tag}
 :::
 ::: {.card-p}
 ### [AI operations and enablement](projects/ai-operations.qmd)

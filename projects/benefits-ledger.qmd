@@ -9,7 +9,7 @@ lightbox: true
 
 A benefits receivables reconciliation checks that what was billed to retirees and former employees matches what they paid and what reached the general ledger. In this scenario the numbers come from several monthly reports that rarely agree on the first try. Usually it's timing: a payment arrives one day and posts days later, or a death is reported months after it happened.
 
-Based on work built in Human Resources, reconciling benefits billing and payments for an employer group. This page rebuilds the problem on made-up data, so I can show how it works. Claude (AI) wrote the Python, SQL and DAX at my direction; I set the vendor formats, matching rules and checks, and reviewed every result.
+Built from scratch on invented data as a portfolio exercise. Claude (AI) wrote the Python, SQL and DAX at my direction; I set the vendor formats, matching rules and checks, and reviewed every result.
 
 ## Data
 
@@ -53,7 +53,7 @@ Every problem here is planted in this exercise, with a known answer key: late-re
 
 ## The same reconciliation in Python and SQL
 
-To check the Power BI answers a second way, I rebuilt the reconciliation from the raw reports in Python and SQL.
+To check the Power BI answers a second way, I had Claude build the reconciliation again from the raw reports in Python and SQL, to my rules.
 
 1. **Extract.** Python reads the two vendor PDFs (synthetic, printed from the same made-up data in two different layouts). Every file has to match its own footer (record count and total) before it's loaded.
 2. **Match.** In this scenario, neither vendor sends a person number, and both show only the last 4 of an identifier (synthetic identifiers throughout; no real SSNs of any kind are used). Lines match on the last 4 plus first and last name, then on the last 4 plus last name to catch a nickname or typo. A line counts only when exactly one person fits; anything else is set aside with the reason, on the load checks report.
@@ -203,7 +203,7 @@ Full file: [r01_roll_forward.sql](../code/benefits/r01_roll_forward.sql)
 
 ## Tools
 
-Excel · Power BI · Power Query · DAX · Python · SQL · SQLite (code written by AI at my direction)
+Excel · Power BI · Power Query · DAX · Python (AI-assisted) · SQL · SQLite (code written by AI at my direction)
 
 ## Repo
 

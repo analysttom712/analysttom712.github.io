@@ -78,8 +78,12 @@ Each entry is a rule, what happened, and what was done. It never says what the r
 - **Keep a decision log.** It's the evidence that the rules work, and it shows what to tighten next.
 - **A person approves anything that goes out.** Advice from an agent is input, not approval.
 
+## Credits
+
+I adapted ideas from Matt Pocock's [AI engineering workshop](https://youtu.be/-QFHIoCo-Ko) and Lydia Hallie's [Rethinking Claude Code Best Practices](https://youtu.be/vlfCjWuv4es).
+
 ## Tools
 
-Claude (agents, hooks, memory) · Git and GitHub · Python · Quarto
+Claude (agents, hooks, memory) · Git and GitHub · Python (AI-assisted) · Quarto
 
 [← All projects](../projects.qmd)
