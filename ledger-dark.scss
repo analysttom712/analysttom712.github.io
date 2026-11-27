@@ -61,3 +61,6 @@ section[id], [id].origin { scroll-margin-top: 5rem; }
 @media (prefers-reduced-motion: reduce) {
   :target { animation: none; box-shadow: inset 4px 0 0 $primary; }
 }
+
+/* Descriptions stay in meta tags for search and link previews; not printed under page titles. */
+#title-block-header .description { display: none; }

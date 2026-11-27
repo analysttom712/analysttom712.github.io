@@ -1,6 +1,9 @@
 project:
   type: website
   output-dir: _site
+  render:
+    - "*.qmd"
+    - "!docs/"
   resources:
     - code/
     - cat/
@@ -10,7 +13,7 @@ project:
 website:
   title: "Thomas Baynum"
   site-url: "https://analysttom712.github.io"
-  description: "Data analyst: reconciliation, Power BI, Power Query and enterprise BI reporting."
+  description: "Data analyst: reconciliation, Power BI and Power Query."
   favicon: images/thomas-baynum.jpg
   image: images/thomas-baynum.jpg
   open-graph: true
