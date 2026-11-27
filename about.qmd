@@ -9,7 +9,7 @@ Every job I've had came down to making the numbers agree. Route logs and hours o
 
 I like to know how a system works, not just what it outputs: when the cash arrives, when a change is keyed, when it posts and when each report runs. Most "errors" turn out to be timing, and knowing which is which is the job.
 
-I'm open to **data analyst** roles, with a growing interest in **AI operations and enablement**: anywhere reconciliation, reporting, clean data and the careful use of AI matter.
+I'm open to **data analyst**, **data management** and **AI operations and enablement** roles, and I'm building toward **analytics engineering** and **data engineering** *(see [Where I'm headed](#headed))*: anywhere reconciliation, reporting, clean data and the careful use of AI matter.
 
 ## Where it started
 
@@ -25,3 +25,13 @@ There was no set process for pulling a year of payroll data together for 401(k) 
 - SQL Fundamentals and Intermediate SQL, DataCamp, June 2026
 - Student member, National Association of Certified Bookkeepers, 2022 to present
 - QuickBooks Online Certified ProAdvisor
+
+## Where I'm headed {#headed}
+
+Reconciliation taught me that many bad numbers start upstream, before anyone opens a report. So I'm learning to build the upstream part myself. First comes clean, tested data *(data management)*. Then come models that carry their checks with them *(analytics engineering)*, and then the pipelines that move the data *(data engineering)*. I'm doing it in public, on invented data, in my [Total Rewards analytics platform](projects/total-rewards-platform.qmd).
+
+- GitHub Foundations *(GH-900)*: in progress
+- PL-300 Power BI Data Analyst: in progress *([my Power BI work so far, AI-assisted](projects/benefits-ledger.qmd))*
+- AWS Cloud Practitioner: planned
+- dbt Analytics Engineering: planned
+- DP-600 Fabric Analytics Engineer: optional, planned
