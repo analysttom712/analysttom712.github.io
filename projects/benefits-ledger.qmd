@@ -229,7 +229,7 @@ In this synthetic scenario:
 
 ## Tools
 
-Excel · Power BI · Power Query · DAX · Python (AI-assisted) · SQL · SQLite (code written by AI at my direction)
+Excel · Power BI · Power Query · DAX, Python and SQL (AI-assisted: Claude wrote the code to my rules, I reviewed every result) · SQLite
 
 ## Repo
 

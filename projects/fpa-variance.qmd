@@ -67,7 +67,7 @@ For the fictional company in Microsoft's sample data:
 
 ## Tools
 
-SQL Server (SSMS) · Power BI · DAX
+SQL Server (SSMS) · Power BI · SQL and DAX (AI-assisted: I read and tested every query and measure)
 
 ## Write-ups
 

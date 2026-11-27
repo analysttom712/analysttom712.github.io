@@ -26,7 +26,7 @@ Data analyst · reconciliation, Power BI and Power Query
 :::
 ::: {.kpi}
 **[35 DAX measures](projects/fpa-variance.qmd#the-dax)**
-[published, with the errors I caught]{.k}
+[AI-assisted; I tested each one and caught a 4-years-vs-2 budget error]{.k}
 :::
 ::: {.kpi}
 **Accounting first**
@@ -39,9 +39,9 @@ Data analyst · reconciliation, Power BI and Power Query
 ::: {.cards}
 ::: {.card-p}
 ### [Benefits receivables reconciliation](projects/benefits-ledger.qmd)
-Billing, payments and the ledger tied out monthly, with every difference given a cause. Then checked again in Python and SQL, starting from vendor PDFs.
+Billing, payments and the ledger tied out monthly, with every difference given a cause. Then checked again in AI-assisted Python and SQL, to matching rules and checks I set, starting from vendor PDFs.
 
-[Power BI]{.tag} [DAX]{.tag} [Python (AI-assisted)]{.tag} [SQL]{.tag}
+[Power BI]{.tag} [DAX, SQL and Python (AI-assisted)]{.tag}
 :::
 ::: {.card-p}
 ### [AI operations and enablement](projects/ai-operations.qmd)
@@ -53,7 +53,7 @@ A team of AI agents run with roles, written rules and review gates, and a decisi
 ### [FP&A variance and forecast](projects/fpa-variance.qmd)
 Budget versus actual on public sample data, including the mistakes I caught.
 
-[SQL Server]{.tag} [Power BI]{.tag} [DAX]{.tag}
+[SQL Server]{.tag} [Power BI]{.tag} [SQL and DAX (AI-assisted)]{.tag}
 :::
 :::
 
