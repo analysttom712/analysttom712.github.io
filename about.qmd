@@ -22,6 +22,6 @@ There was no set process for pulling a year of payroll data together for 401(k) 
 - AAS in Accounting, Midlands Technical College, 2026
 - Phi Theta Kappa Honor Society, member since 2022
 - Coursework in data science (R), payroll, and business taxation
-- Intro and Intermediate SQL, DataCamp, January 2026
-- Student member, National Association of Certified Public Bookkeepers (NACPB), 2022 to present
+- SQL Fundamentals and Intermediate SQL, DataCamp, June 2026
+- Student member, National Association of Certified Bookkeepers, 2022 to present
 - QuickBooks Online Certified ProAdvisor
