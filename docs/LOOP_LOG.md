@@ -9,9 +9,10 @@
 | What the business should do (all four projects) | business-should-do | 1 | 3: AI ops line named scans and CI the page doesn't show; benefits read as advice to a real employer (no "synthetic scenario" lead-in); "both end in refunds" not on the page | Claim beyond the page's proof (also in #5) | Merged (#11) |
 | Resume request (interim) and About facts | resume-request-interim | 1 | 0 | none | Merged (#12) |
 | Domain-move clean-up (site-url, static pages, old-URL test) | domain-move-cleanup | 1 | 0 | none | Merged (#13) |
-| Total Rewards page refresh (Day 5 facts, CI labelled AI-built, cert path) | total-rewards-refresh | 2 | 3: "~2M rows" KPI read as done; stale "two-hour session"; Review 1 bug not tied to the study site | Claim beyond the page's proof (also in #5, #11) | In review |
+| Total Rewards page refresh (Day 5 facts, CI labelled AI-built, cert path) | total-rewards-refresh | 2 | 3: "~2M rows" KPI read as done; stale "two-hour session"; Review 1 bug not tied to the study site | Claim beyond the page's proof (also in #5, #11) | Merged (#15) |
+| Where I'm headed (About: target roles, cert path) | where-im-headed | 1 | 0 (2 nice-to-haves applied: "many" not "most"; AI-assisted label on the Power BI link) | none | In review |
 
-Totals: slices shipped 7 · average loops per slice 1.3 · repeat issues 2
+Totals: slices shipped 8 · average loops per slice 1.3 · repeat issues 2
 
 ## Standardize
 - #5: new files under the repo root get published unless excluded. Check `_site/` for unexpected pages before every PR.
@@ -19,3 +20,4 @@ Totals: slices shipped 7 · average loops per slice 1.3 · repeat issues 2
 - #7: a rule that has to hold on every PR goes in site-checks, not in a checklist.
 - Benefits Power BI: before any PDF export, clear slicers and size every table so it shows all rows and columns without scrolling.
 - Business sections: every recommendation quotes a figure already on its page; benefits copy always says "synthetic scenario".
+- Total Rewards refresh: when a page summarizes another repo, re-read that repo's latest README and process changes first; stale details (session length, figures) are where it drifts.
