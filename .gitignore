@@ -7,3 +7,10 @@
 
 # Parked drafts stay local, never in the public repo
 projects/_*.qmd
+
+# Local-only files: Python env, secrets, anything named *.local.* (includes the scan blocklist)
+.venv/
+__pycache__/
+.env
+.env.*
+*.local.*

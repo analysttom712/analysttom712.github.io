@@ -3,3 +3,9 @@
 *.jpg binary
 *.png binary
 *.webp binary
+
+# Scripts and hooks: LF on every OS (CRLF breaks "#!/bin/sh" and shebangs)
+.githooks/* text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text eol=lf

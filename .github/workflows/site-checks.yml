@@ -1,0 +1,60 @@
+name: site-checks
+
+# Runs on every pull request. Fails closed: any failed step blocks the merge
+# once "site-checks" is a required check in the main ruleset.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  site-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history, so the scan can diff against the base branch
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # The blocklist (names that must never appear) lives only in the SCAN_BLOCKLIST
+      # secret. Same-repo runs fail closed without it; fork PRs never get secrets,
+      # so they only warn and every other scan rule still applies.
+      - name: Write the scan blocklist from the repo secret
+        env:
+          SCAN_BLOCKLIST: ${{ secrets.SCAN_BLOCKLIST }}
+          FROM_FORK: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+        run: |
+          if [ -z "$SCAN_BLOCKLIST" ]; then
+            if [ "$FROM_FORK" = "true" ]; then
+              echo "::warning::Fork PR: SCAN_BLOCKLIST is not available, so names are not being checked."
+            else
+              echo "::error::SCAN_BLOCKLIST secret is missing. Add it in Settings > Secrets and variables > Actions."
+              exit 1
+            fi
+          fi
+          printf '%s\n' "$SCAN_BLOCKLIST" > .scan-blocklist.local.txt
+
+      - name: Public-repo scan (lines this PR adds)
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        run: python -I scripts/public_scan.py --base "origin/$BASE_REF"
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.11.9
+
+      - name: Render
+        run: quarto render
+
+      - name: No internal docs published
+        run: |
+          if [ -d _site/docs ]; then echo "::error::_site/docs/ exists: internal docs are being published."; exit 1; fi
+
+      - name: Broken internal links and anchors
+        run: python -I scripts/check_links.py _site
