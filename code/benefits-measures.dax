@@ -1,0 +1,473 @@
+// Benefits receivables reconciliation: all DAX measures
+// Thomas Baynum · Power BI on invented data, built from scratch as a portfolio exercise
+// Converted from the model's own definition file (_Measures.tmdl in the Power BI project).
+// Paste into DAX query view to read or test any measure (swap the EVALUATE at the end for your own query).
+// The DAX was written by Claude (AI) at my direction; I set the rules and checks and reviewed every result.
+// 77 measures in 12 display folders.
+
+DEFINE
+
+    // ---- Balances ----
+    MEASURE _Measures[GL Debit] = SUM ( 'Fact Ledger Postings'[Debit] )
+    MEASURE _Measures[GL Credit] = SUM ( 'Fact Ledger Postings'[Credit] )
+    // Debits minus credits, to the cent: positive is a debit balance
+    MEASURE _Measures[GL Net] = ROUND ( [GL Debit] - [GL Credit], 2 )
+    // Running balance through the last month in view, including the beginning balance
+    MEASURE _Measures[Ending Balance] =
+        CALCULATE (
+            [GL Net],
+            FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[Month Start] <= MAX ( 'Dim Month'[Month Start] ) )
+        )
+    MEASURE _Measures[Period Activity] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] <> "Beginning balance" )
+    MEASURE _Measures[Opening Balance] = [Ending Balance] - [Period Activity]
+
+    // ---- Roll-forward ----
+    MEASURE _Measures[RF Billing] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] = "Billing" )
+    MEASURE _Measures[RF Deposits] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] = "Deposits" )
+    MEASURE _Measures[RF Checks] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] = "Checks" )
+    MEASURE _Measures[RF Off-cycle] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] = "Off-cycle" )
+    MEASURE _Measures[RF Returns] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] = "Return" )
+    MEASURE _Measures[RF Refunds] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] = "Refund" )
+    MEASURE _Measures[RF Retro adjustments] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] = "Retro adjustments" )
+    MEASURE _Measures[RF Reclass] = CALCULATE ( [GL Net], 'Fact Ledger Postings'[Entry Group] = "Reclass" )
+    // Opening + every entry group - ending: anything but 0 means an entry type is missing
+    MEASURE _Measures[RF Check (should be 0)] = [Opening Balance] + [RF Billing] + [RF Deposits] + [RF Checks] + [RF Off-cycle] + [RF Returns] + [RF Refunds] + [RF Retro adjustments] + [RF Reclass] - [Ending Balance]
+
+    // ---- Billing and payments ----
+    MEASURE _Measures[Billed] = SUM ( 'Fact Billing'[Total Premium] )
+    MEASURE _Measures[Drafted Received] = SUM ( 'Fact Receipts'[Premium Received] )
+    MEASURE _Measures[Checks Logged] = CALCULATE ( SUM ( 'Fact Payment Log'[Amount] ), 'Fact Payment Log'[Action] = "Check" )
+    MEASURE _Measures[Off-cycle Logged] = CALCULATE ( SUM ( 'Fact Payment Log'[Amount] ), 'Fact Payment Log'[Action] = "Off-cycle" )
+    MEASURE _Measures[Returns Logged] = CALCULATE ( SUM ( 'Fact Payment Log'[Amount] ), 'Fact Payment Log'[Action] = "Return" )
+    MEASURE _Measures[Refunds Issued] = - CALCULATE ( SUM ( 'Fact Payment Log'[Amount] ), 'Fact Payment Log'[Action] = "Refund" )
+    MEASURE _Measures[Ledger Detail Debits] = SUM ( 'Fact Ledger Detail'[Debit] )
+
+    // ---- Tie-outs ----
+    // Billing journal against the per-person ledger detail, by account and month
+    MEASURE _Measures[Tie: billing vs ledger detail] = [RF Billing] - [Ledger Detail Debits]
+    // Accounts 1 and 2 against Premium Billing; dependent life (3) is not on Premium Billing
+    MEASURE _Measures[Tie: ledger detail vs billing] = CALCULATE ( [Ledger Detail Debits], 'Fact Ledger Detail'[Account Number] <> 3 ) - [Billed]
+    // The Vendor 1 lump deposit in the GL against the Vendor 1 receipt report, by draft month
+    MEASURE _Measures[Tie: Vendor 1 deposit vs receipts] =
+        CALCULATE ( [GL Credit], 'Fact Ledger Postings'[Deposit Source] = "Vendor 1", REMOVEFILTERS ( 'Dim Account' ) )
+            - CALCULATE (
+                [Drafted Received],
+                'Fact Receipts'[Source] = "Vendor 1",
+                REMOVEFILTERS ( 'Dim Month' ),
+                TREATAS ( VALUES ( 'Dim Month'[Month Start] ), 'Fact Receipts'[Draft Month] )
+            )
+    // The Vendor 2 lump deposit in the GL against the Vendor 2 receipt report, by draft month
+    MEASURE _Measures[Tie: Vendor 2 deposit vs receipts] =
+        CALCULATE ( [GL Credit], 'Fact Ledger Postings'[Deposit Source] = "Vendor 2", REMOVEFILTERS ( 'Dim Account' ) )
+            - CALCULATE (
+                [Drafted Received],
+                'Fact Receipts'[Source] = "Vendor 2",
+                REMOVEFILTERS ( 'Dim Month' ),
+                TREATAS ( VALUES ( 'Dim Month'[Month Start] ), 'Fact Receipts'[Draft Month] )
+            )
+    // The Internal ACH lump deposit in the GL against the Internal ACH receipt report, by draft month
+    MEASURE _Measures[Tie: Internal ACH deposit vs receipts] =
+        CALCULATE ( [GL Credit], 'Fact Ledger Postings'[Deposit Source] = "Internal ACH", REMOVEFILTERS ( 'Dim Account' ) )
+            - CALCULATE (
+                [Drafted Received],
+                'Fact Receipts'[Source] = "Internal ACH",
+                REMOVEFILTERS ( 'Dim Month' ),
+                TREATAS ( VALUES ( 'Dim Month'[Month Start] ), 'Fact Receipts'[Draft Month] )
+            )
+    // Checks posted in the GL against checks logged, by month: differences are cutoff timing or misposts
+    MEASURE _Measures[Tie: check deposits vs payment log] = - [RF Checks] - [Checks Logged]
+
+    // ---- Exceptions ----
+    MEASURE _Measures[Exceptions] = CALCULATE ( COUNTROWS ( 'Fact Person Month' ), 'Fact Person Month'[Needs Action] = "Yes" )
+    MEASURE _Measures[Exception Amount] = CALCULATE ( SUM ( 'Fact Person Month'[Difference] ), 'Fact Person Month'[Needs Action] = "Yes" )
+    // Premium billed for months after the date of death
+    MEASURE _Measures[Billed After Death] = CALCULATE ( SUM ( 'Fact Person Month'[Billed] ), 'Fact Person Month'[Cause] = "Billed after death" )
+    // What was actually collected for those months: owed back to the estate
+    MEASURE _Measures[Collected After Death] = CALCULATE ( SUM ( 'Fact Person Month'[Paid] ), 'Fact Person Month'[Cause] = "Billed after death" )
+    MEASURE _Measures[Late Medicare Rows] = CALCULATE ( COUNTROWS ( 'Fact Billing' ), 'Fact Billing'[Late Medicare Change] = "Yes" )
+    MEASURE _Measures[Late Age-Out Rows] = CALCULATE ( COUNTROWS ( 'Fact Billing' ), 'Fact Billing'[Late Age-Out] = "Yes" )
+
+    // ---- Display ----
+    // Dynamic page subheader that reads the account, division, month and cause slicers
+    MEASURE _Measures[Subheader] =
+        // What the page is showing, built from the slicers: "1 Retiree  |  All divisions  |  Mar 2025 - Jun 2025"
+        VAR Acct =
+            IF (
+                ISFILTERED ( 'Dim Account'[Account] ),
+                CONCATENATEX ( VALUES ( 'Dim Account'[Account] ), 'Dim Account'[Account], ", ", 'Dim Account'[Account] ),
+                "All accounts"
+            )
+        VAR Divs = COUNTROWS ( VALUES ( 'Dim Person'[Division] ) )
+        VAR Div =
+            IF (
+                ISFILTERED ( 'Dim Person'[Division] ),
+                IF ( Divs > 3, Divs & " divisions", CONCATENATEX ( VALUES ( 'Dim Person'[Division] ), 'Dim Person'[Division], ", ", 'Dim Person'[Division] ) ),
+                "All divisions"
+            )
+        VAR FirstMonth = MIN ( 'Dim Month'[Month Start] )
+        VAR LastMonth = MAX ( 'Dim Month'[Month Start] )
+        VAR Months =
+            IF (
+                ISFILTERED ( 'Dim Month'[Month] ),
+                IF ( FirstMonth = LastMonth, FORMAT ( FirstMonth, "mmm yyyy" ), FORMAT ( FirstMonth, "mmm yyyy" ) & " - " & FORMAT ( LastMonth, "mmm yyyy" ) ),
+                "Jan 2025 - Dec 2025"
+            )
+        VAR Causes =
+            IF (
+                ISFILTERED ( 'Fact Person Month'[Cause] ),
+                "  |  " & CONCATENATEX ( VALUES ( 'Fact Person Month'[Cause] ), 'Fact Person Month'[Cause], ", ", 'Fact Person Month'[Cause] ),
+                ""
+            )
+        RETURN
+            Acct & "  |  " & Div & "  |  " & Months & Causes
+
+    // ---- Load checks ----
+    MEASURE _Measures[Rows: Premium Billing] = COUNTROWS ( 'Fact Billing' )
+    MEASURE _Measures[Rows: Receipts] = COUNTROWS ( 'Fact Receipts' )
+    MEASURE _Measures[Rows: Ledger Detail] = COUNTROWS ( 'Fact Ledger Detail' )
+    MEASURE _Measures[Rows: Ledger Postings] = COUNTROWS ( 'Fact Ledger Postings' )
+    MEASURE _Measures[Rows: Payment Log] = COUNTROWS ( 'Fact Payment Log' )
+
+    // ---- Variance ----
+    // Billed minus paid, every person-month in view
+    MEASURE _Measures[Variance] = ROUND ( SUM ( 'Fact Person Month'[Difference] ), 2 )
+    // Variance from timing or already-accounted causes: no action needed
+    MEASURE _Measures[Benign Variance] =
+        VAR Benign = { "Ties", "Prepaid next year", "Annual payment (timing)", "Dependent life in receipt", "Off-cycle catch-up" }
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Difference] ),
+                    'Fact Person Month'[Cause] IN Benign
+                ),
+                2
+            )
+    // Variance that needs someone to act: Variance less Benign Variance
+    MEASURE _Measures[True Variance] =
+        VAR Benign = { "Ties", "Prepaid next year", "Annual payment (timing)", "Dependent life in receipt", "Off-cycle catch-up" }
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Difference] ),
+                    NOT 'Fact Person Month'[Cause] IN Benign
+                ),
+                2
+            )
+    MEASURE _Measures[True Variance Rows] =
+        VAR Benign = { "Ties", "Prepaid next year", "Annual payment (timing)", "Dependent life in receipt", "Off-cycle catch-up" }
+        RETURN
+            CALCULATE (
+                COUNTROWS ( 'Fact Person Month' ),
+                NOT 'Fact Person Month'[Cause] IN Benign
+            )
+    // Variance whose cause names no mechanism (Review, Short or unpaid, Overpaid): should trend to zero
+    MEASURE _Measures[Unexplained Variance] =
+        VAR Unexplained = { "Review", "Short or unpaid", "Overpaid" }
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Difference] ),
+                    'Fact Person Month'[Cause] IN Unexplained
+                ),
+                2
+            )
+    MEASURE _Measures[Unexplained Rows] =
+        VAR Unexplained = { "Review", "Short or unpaid", "Overpaid" }
+        RETURN
+            CALCULATE (
+                COUNTROWS ( 'Fact Person Month' ),
+                'Fact Person Month'[Cause] IN Unexplained
+            )
+    // Share of variance with a named mechanism. Absolute dollars, so a shortfall and an overpayment do not cancel out
+    MEASURE _Measures[Variance Explained %] =
+        VAR Unexplained = { "Review", "Short or unpaid", "Overpaid" }
+        VAR TotalAbs = SUMX ( 'Fact Person Month', ABS ( 'Fact Person Month'[Difference] ) )
+        VAR UnexplainedAbs =
+            CALCULATE (
+                SUMX ( 'Fact Person Month', ABS ( 'Fact Person Month'[Difference] ) ),
+                'Fact Person Month'[Cause] IN Unexplained
+            )
+        RETURN
+            IF ( TotalAbs = 0, BLANK (), DIVIDE ( TotalAbs - UnexplainedAbs, TotalAbs ) )
+    // The cause carrying the most absolute dollars in the current filter
+    MEASURE _Measures[Primary Reason] =
+        VAR Ranked =
+            ADDCOLUMNS (
+                VALUES ( 'Fact Person Month'[Cause] ),
+                "@Abs", CALCULATE ( SUMX ( 'Fact Person Month', ABS ( 'Fact Person Month'[Difference] ) ) )
+            )
+        VAR Top1 = TOPN ( 1, FILTER ( Ranked, [@Abs] > 0 ), [@Abs], DESC )
+        RETURN
+            IF (
+                HASONEVALUE ( 'Fact Person Month'[Cause] ),
+                SELECTEDVALUE ( 'Fact Person Month'[Cause] ),
+                MAXX ( Top1, 'Fact Person Month'[Cause] )
+            )
+    // Billing that never reached the general ledger
+    MEASURE _Measures[Affects GL] =
+        ROUND (
+            CALCULATE (
+                SUM ( 'Fact Person Month'[Billed] ) - SUM ( 'Fact Person Month'[GL Billed] ),
+                'Fact Person Month'[Cause] = "Costing not keyed (GL missing)"
+            ),
+            2
+        )
+    MEASURE _Measures[Next Step (selected)] =
+        IF (
+            HASONEVALUE ( 'Fact Person Month'[Cause] ),
+            SELECTEDVALUE ( 'Fact Person Month'[Next Step] ),
+            "Pick one cause"
+        )
+
+    // ---- Balances and aging ----
+    // Billed minus paid for the months in view: positive means they owe us
+    MEASURE _Measures[AR Balance] = ROUND ( SUM ( 'Fact Person Month'[Billed] ) - SUM ( 'Fact Person Month'[Paid] ), 2 )
+    // Running balance through the newest month in view, ignoring any month filter before it
+    MEASURE _Measures[Open Balance] =
+        VAR M = MAX ( 'Dim Month'[Month Start] )
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Billed] ) - SUM ( 'Fact Person Month'[Paid] ),
+                    FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[Month Start] <= M )
+                ),
+                2
+            )
+    // Billed minus paid for the newest month in view only
+    MEASURE _Measures[Aging 0-30] =
+        VAR M = MAX ( 'Dim Month'[Month Start] )
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Billed] ) - SUM ( 'Fact Person Month'[Paid] ),
+                    FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[Month Start] = M )
+                ),
+                2
+            )
+    MEASURE _Measures[Aging 31-60] =
+        VAR M = MAX ( 'Dim Month'[Month Start] )
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Billed] ) - SUM ( 'Fact Person Month'[Paid] ),
+                    FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[Month Start] = EDATE ( M, -1 ) )
+                ),
+                2
+            )
+    MEASURE _Measures[Aging 61-90] =
+        VAR M = MAX ( 'Dim Month'[Month Start] )
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Billed] ) - SUM ( 'Fact Person Month'[Paid] ),
+                    FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[Month Start] = EDATE ( M, -2 ) )
+                ),
+                2
+            )
+    // Everything three months back or older, still open
+    MEASURE _Measures[Aging 90+] =
+        VAR M = MAX ( 'Dim Month'[Month Start] )
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Billed] ) - SUM ( 'Fact Person Month'[Paid] ),
+                    FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[Month Start] <= EDATE ( M, -3 ) )
+                ),
+                2
+            )
+    // Sum of the positive person balances only
+    MEASURE _Measures[Owed to Us] =
+        ROUND (
+            SUMX (
+                VALUES ( 'Dim Person'[Person Number] ),
+                VAR b = [Open Balance]
+                RETURN IF ( b > 0, b, 0 )
+            ),
+            2
+        )
+    // Sum of the credit balances, shown positive
+    MEASURE _Measures[We Owe] =
+        ROUND (
+            SUMX (
+                VALUES ( 'Dim Person'[Person Number] ),
+                VAR b = [Open Balance]
+                RETURN IF ( b < 0, -b, 0 )
+            ),
+            2
+        )
+    MEASURE _Measures[People with a Balance] =
+        COUNTROWS (
+            FILTER ( VALUES ( 'Dim Person'[Person Number] ), ABS ( [Open Balance] ) >= 0.01 )
+        )
+    MEASURE _Measures[Last Receipt Month] =
+        CALCULATE (
+            MAX ( 'Fact Person Month'[Report Month] ),
+            'Fact Person Month'[Paid] > 0
+        )
+    MEASURE _Measures[Months Since Payment] =
+        VAR M = MAX ( 'Dim Month'[Month Start] )
+        VAR LastPay =
+            CALCULATE (
+                MAX ( 'Fact Person Month'[Report Month] ),
+                'Fact Person Month'[Paid] > 0,
+                FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[Month Start] <= M )
+            )
+        RETURN
+            IF ( ISBLANK ( LastPay ), BLANK (), DATEDIFF ( LastPay, M, MONTH ) )
+
+    // ---- Month over month ----
+    MEASURE _Measures[Prior Month Balance] =
+        VAR M = MAX ( 'Dim Month'[Month Start] )
+        RETURN
+            ROUND (
+                CALCULATE (
+                    SUM ( 'Fact Person Month'[Billed] ) - SUM ( 'Fact Person Month'[Paid] ),
+                    FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[Month Start] <= EDATE ( M, -1 ) )
+                ),
+                2
+            )
+    // Positive means the balance grew this month
+    MEASURE _Measures[Balance Change] = ROUND ( [Open Balance] - [Prior Month Balance], 2 )
+    MEASURE _Measures[Balance Direction] =
+        VAR d = [Balance Change]
+        RETURN
+            SWITCH (
+                TRUE (),
+                ISBLANK ( d ), BLANK (),
+                d > 0.01, "Growing",
+                d < -0.01, "Shrinking",
+                "Flat"
+            )
+
+    // ---- Hide zeros ----
+    // Gate for the hide-zeros measures: blank when the person has nothing outstanding
+    MEASURE _Measures[Has Balance] = IF ( ABS ( [Open Balance] ) >= 0.005, 1, BLANK () )
+    // Monthly balance, blank at zero so settled months leave the grid empty and fully settled people drop out
+    MEASURE _Measures[Balance (hide zeros)] =
+        VAR b = [AR Balance]
+        RETURN
+            IF ( ABS ( b ) < 0.005, BLANK (), b )
+    MEASURE _Measures[Open Balance (hide zeros)] =
+        VAR b = [Open Balance]
+        RETURN
+            IF ( ABS ( b ) < 0.005, BLANK (), b )
+    MEASURE _Measures[Trend (hide zeros)] = IF ( ISBLANK ( [Has Balance] ), BLANK (), [Balance Direction] )
+    MEASURE _Measures[Months Since Payment (hide zeros)] = IF ( ISBLANK ( [Has Balance] ), BLANK (), [Months Since Payment] )
+    MEASURE _Measures[Last Receipt (hide zeros)] = IF ( ISBLANK ( [Has Balance] ), BLANK (), [Last Receipt Month] )
+
+    // ---- Why ----
+    // One short sentence for the headline card.
+    MEASURE _Measures[Month Headline] =
+        VAR M = SELECTEDVALUE ( 'Dim Month'[Month] )
+        VAR B = ROUND ( SUM ( 'Fact Person Month'[Billed] ), 2 )
+        VAR P = ROUND ( SUM ( 'Fact Person Month'[Paid] ), 2 )
+        VAR Net = ROUND ( P - B, 2 )
+        VAR ActRows =
+            CALCULATE ( COUNTROWS ( 'Fact Person Month' ), 'Fact Person Month'[Needs Action] = "Yes" )
+        RETURN
+            IF (
+                ISBLANK ( M ),
+                "Pick one month to see what happened.",
+                M & ": "
+                    & IF (
+                        Net = 0,
+                        "billed and received match.",
+                        IF (
+                            Net < 0,
+                            FORMAT ( -Net, "$#,0.00" ) & " owed to us.",
+                            FORMAT ( Net, "$#,0.00" ) & " received above billings."
+                        )
+                    )
+                    & " " & FORMAT ( ActRows, "#,0" ) & " records need action."
+            )
+    // The full paragraph for the story card. Needs a visual that wraps text.
+    MEASURE _Measures[Month Story] =
+        VAR M = SELECTEDVALUE ( 'Dim Month'[Month] )
+        VAR People = DISTINCTCOUNT ( 'Fact Person Month'[Person Number] )
+        VAR AllRows = COUNTROWS ( 'Fact Person Month' )
+        VAR B = ROUND ( SUM ( 'Fact Person Month'[Billed] ), 2 )
+        VAR P = ROUND ( SUM ( 'Fact Person Month'[Paid] ), 2 )
+        VAR Net = ROUND ( P - B, 2 )
+        VAR TieRows =
+            CALCULATE ( COUNTROWS ( 'Fact Person Month' ), 'Fact Person Month'[Cause] = "Ties" )
+        VAR ActRows =
+            CALCULATE ( COUNTROWS ( 'Fact Person Month' ), 'Fact Person Month'[Needs Action] = "Yes" )
+        VAR Ranked =
+            ADDCOLUMNS (
+                CALCULATETABLE (
+                    VALUES ( 'Fact Person Month'[Cause] ),
+                    'Fact Person Month'[Needs Action] = "Yes"
+                ),
+                "@Abs", CALCULATE ( SUMX ( 'Fact Person Month', ABS ( 'Fact Person Month'[Difference] ) ) )
+            )
+        VAR Top1 = TOPN ( 1, Ranked, [@Abs], DESC )
+        VAR TopName = MAXX ( Top1, 'Fact Person Month'[Cause] )
+        VAR TopAbs = MAXX ( Top1, [@Abs] )
+        VAR TopStep =
+            CALCULATE (
+                SELECTEDVALUE ( 'Fact Person Month'[Next Step] ),
+                'Fact Person Month'[Cause] = TopName
+            )
+        RETURN
+            IF (
+                ISBLANK ( M ),
+                "Pick one month in the slicer and this will explain it.",
+                "In " & M & ", " & FORMAT ( People, "#,0" ) & " people were billed "
+                    & FORMAT ( B, "$#,0.00" ) & " and " & FORMAT ( P, "$#,0.00" ) & " came in. "
+                    & IF (
+                        Net = 0,
+                        "The two sides match exactly. ",
+                        IF (
+                            Net < 0,
+                            "That leaves " & FORMAT ( -Net, "$#,0.00" ) & " owed to us. ",
+                            "That leaves " & FORMAT ( Net, "$#,0.00" ) & " received above what we billed. "
+                        )
+                    )
+                    & FORMAT ( TieRows, "#,0" ) & " of the " & FORMAT ( AllRows, "#,0" )
+                    & " records tie to the penny. "
+                    & IF (
+                        ActRows = 0,
+                        "Nothing in this month needs action.",
+                        FORMAT ( ActRows, "#,0" ) & " need action. The biggest reason is "
+                            & TopName & ", worth " & FORMAT ( TopAbs, "$#,0.00" )
+                            & ". Next step there: " & TopStep & "."
+                    )
+            )
+    // Explains the selected cause in one sentence.
+    MEASURE _Measures[In plain English] =
+        SWITCH (
+            SELECTEDVALUE ( 'Fact Person Month'[Cause] ),
+            "Ties", "Billed and received match to the penny. Nothing to do.",
+            "Prepaid next year", "Money came in during 2025 for a 2026 month. The bill for that month does not exist yet, so the payment sits ahead of the billing. Not a problem.",
+            "Annual payment (timing)", "This person pays the whole year at once, so one month shows a large payment and the other eleven show none. Judge it on the yearly total.",
+            "Dependent life in receipt", "The gap is exactly the dependent life premium, which belongs in a different account. The two sides only look off.",
+            "Off-cycle catch-up", "This person paid extra outside the normal cycle to catch up on an earlier shortfall. The overage here pays down an older month.",
+            "Billed after death", "We billed for a month that started after this person died. Coverage should have ended. The premium needs reversing and the money returning.",
+            "Costing not keyed (GL missing)", "We billed the premium but nobody keyed the cost to the general ledger, so the subledger shows a charge the GL does not. The receivable is right; the accounting entry is missing.",
+            "Retro-canceled, not adjusted", "Coverage was cancelled with a back-dated effective date, but the bills already issued were never reversed. We are still billing someone who is not covered.",
+            "Drafted after removal", "We pulled a bank draft in a month we did not bill. This person was removed from coverage and the draft kept running.",
+            "Drafted in error", "This person pays by check, but a draft was taken anyway. They were charged by two methods for the same month.",
+            "Received, not billed", "Money arrived for a month we never billed. Either the billing was missed, or the payment belongs to a different month or person.",
+            "Returned draft", "The draft went through and then bounced back. The payment reversed, so the premium is unpaid again.",
+            "Missed payment", "We billed and nothing came in at all: no partial payment, no draft.",
+            "Short or unpaid", "Less arrived than we billed, and none of the known reasons explain it. Someone has to look.",
+            "Overpaid", "More arrived than we billed, with no known reason.",
+            "Review", "Nothing matched any rule. If you are seeing this, a rule is missing."
+        )
+    MEASURE _Measures[People Affected] = DISTINCTCOUNT ( 'Fact Person Month'[Person Number] )
+    MEASURE _Measures[Records] = COUNTROWS ( 'Fact Person Month' )
+    // Absolute dollars, so an overpay and a shortfall do not cancel out.
+    MEASURE _Measures[Impact] = ROUND ( SUMX ( 'Fact Person Month', ABS ( 'Fact Person Month'[Difference] ) ), 2 )
+    // This cause's share of the month's total movement.
+    MEASURE _Measures[Share of Impact] =
+        VAR Mine = [Impact]
+        VAR Total =
+            CALCULATE (
+                [Impact],
+                REMOVEFILTERS ( 'Fact Person Month'[Cause], 'Fact Person Month'[Next Step] )
+            )
+        RETURN
+            DIVIDE ( Mine, Total )
+
+EVALUATE
+    { 1 }

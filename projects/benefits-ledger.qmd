@@ -51,6 +51,24 @@ Every problem here is planted in this exercise, with a known answer key: late-re
 
 ![Six tie-outs to the general ledger, synthetic data. $0.00 means two sources agree. Detail vs billing is billing that never reached the ledger; checks vs log is timing that clears the next month; the year's ($960.00) is checks received in late December that post in January 2026.](../images/recon-tieouts.jpg){fig-alt="Monthly table comparing billing, ledger detail, three payment channels and the check log against the general ledger for 2025; most cells are $0.00."}
 
+## See the Power BI report
+
+The report working, in 88 seconds with no narration, on invented data:
+
+{{< video https://youtu.be/Ym2ErJMiaLw title="Benefits receivables reconciliation in Power BI, 88-second walkthrough on invented data" >}}
+
+Three of the report's pages, exported from Power BI Desktop. Click any page to see it full size; the video walks through more of the report.
+
+::: {layout-ncol=3}
+![**Start here.** Three headline checks, what each page answers, and a four-step monthly routine.](../images/benefits-pbi/01-start-here.png){group="pbi" fig-alt="Start page: ending balance, 157 person-months needing action and a $0.00 roll-forward check, with a guide to each page and a monthly routine."}
+
+![**Medicare and age-outs.** Who was billed a rate that should already have changed.](../images/benefits-pbi/05-medicare-age-outs.png){group="pbi" fig-alt="Two tables: late Medicare changes and late dependent age-outs, each listing person, month and amount billed."}
+
+![**Load checks.** Rows loaded per report per month; a blank or an odd count means a file to check first.](../images/benefits-pbi/06-load-checks.png){group="pbi" fig-alt="Table of rows loaded per month for premium billing, receipts, ledger detail, ledger postings and the payment log."}
+:::
+
+All 77 measures, grouped by display folder: [benefits-measures.dax](../code/benefits-measures.dax).
+
 ## The same reconciliation in Python and SQL
 
 To check the Power BI answers a second way, I had Claude build the reconciliation again from the raw reports in Python and SQL, to my rules.
