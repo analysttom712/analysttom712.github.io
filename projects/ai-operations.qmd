@@ -70,13 +70,11 @@ Each entry is a rule, what happened, and what was done. It never says what the r
 14. **Nothing public without my yes.** The site was ready to publish. *Caught at Gate 4.* Held: "Let me look first" stopped the publish.
 :::
 
-## What I'd tell a team rolling out AI
+## What the business should do
 
-- **Write the rules before you switch the agent on,** and load them into every session, so nobody has to remember them.
-- **One job per agent.** Give reviewers read-only access: they should never be able to fix what they're judging.
-- **Enforce the rules that matter most with a tool,** not a reminder.
-- **Keep a decision log.** It's the evidence that the rules work, and it shows what to tighten next.
-- **A person approves anything that goes out.** Advice from an agent is input, not approval.
+- Write the rules and review gates before AI agents start work, and enforce the critical ones with tools (such as a hook that checks every git command), not reminders.
+- Give reviewers read-only access and keep a person on every approval. Agent advice is input, not sign-off.
+- Keep a decision log. It's the evidence the controls work, and it shows what to tighten next.
 
 ## Credits
 

@@ -219,6 +219,14 @@ Full file: [r01_roll_forward.sql](../code/benefits/r01_roll_forward.sql)
 - One check passing doesn't mean the month ties. Tie out more than one way.
 - Build it so someone else can run it: plain labels, tips on the page, a routine to follow.
 
+## What the business should do
+
+In this synthetic scenario:
+
+- Start with the biggest cause: 51 person-months were billed but never costed to the ledger ($20,783.50). Check the costing is keyed in the month coverage starts.
+- Act on death notices and removals before the vendor draft date. Billed after death (45) and drafted after removal (18) are the next largest causes, and both leave money collected that is owed back.
+- Run the reconciliation every month, load checks first, so timing differences are labeled and only real errors reach the work list.
+
 ## Tools
 
 Excel · Power BI · Power Query · DAX · Python (AI-assisted) · SQL · SQLite (code written by AI at my direction)
