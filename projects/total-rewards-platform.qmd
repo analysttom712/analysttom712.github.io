@@ -83,4 +83,8 @@ Screenshots are added as each milestone ships, starting with the dbt lineage gra
 
 It turns my background in benefits, payroll and accounting reconciliation into engineering work an employer can inspect: every change and fix is in a public commit history.
 
+## What the business should do
+
+**Planned.** The platform is being built so a Total Rewards team can act each month on four checks: pay outside range, benefits cost per employee, payroll that doesn't tie to the ledger, and carrier files that don't match HR. The first piece exists: every generated salary is [tested against its pay band](https://github.com/analysttom712/total-rewards-analytics/blob/main/tests/test_generator.py). The recommendations come once the models do.
+
 [View the repository on GitHub](https://github.com/analysttom712/total-rewards-analytics)

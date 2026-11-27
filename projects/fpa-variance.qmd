@@ -57,6 +57,14 @@ I then had Claude (AI) profile the whole database before modeling and rebuild th
 
 ![Data checks: 39,409 rows loaded, no postings without an exchange rate, the balance sheet balances every period, and rows per period by year.](../images/fpa-deeper-5-checks.jpg){fig-alt="Three check cards reading 39,409, 0 and 0, and a matrix of row counts by fiscal year and month."}
 
+## What the business should do
+
+For the fictional company in Microsoft's sample data:
+
+- Keep operating expenses growing no faster than sales. Expenses grew 95% against 69% sales growth, and operating margin fell from 26.4% to 22.0%.
+- Review Southeast, which lost money (−8.0% operating margin) while Southwest earned 36.1%.
+- Budget and forecast by account, not just in total. The total forecast landed within 3.1%, while many individual accounts missed.
+
 ## Tools
 
 SQL Server (SSMS) · Power BI · DAX
