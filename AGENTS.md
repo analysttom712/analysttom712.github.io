@@ -19,8 +19,11 @@ Map every page to the target roles:
   (github.com/analysttom712/total-rewards-analytics) as an
   in-progress project: pipeline, tests, CI, dbt planned.
 - Data engineering: a short "where I'm headed" section with the cert
-  path (PL-300 → AWS Cloud Practitioner → dbt → DP-600), marked
-  planned.
+  path (GitHub Foundations, GH-900, now → PL-300 → AWS Cloud
+  Practitioner → dbt Analytics Engineering; DP-600 optional), marked
+  planned except the one in progress. The source of truth is
+  docs/RESOURCES.md ("Cert path") in total-rewards-analytics; if they
+  differ, that file wins and this line gets updated.
 Every skill on the site must point to a project that uses it.
 
 ## Current state
