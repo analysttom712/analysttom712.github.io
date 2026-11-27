@@ -35,7 +35,7 @@ The AdventureWorksDW sample database in SQL Server: actuals by account for 2010 
 
 ## Results
 
-A backtested forecast (2013 predicted as 2012 plus the prior year's change) landed within 3.1% in total while missing many individual accounts. It is one test point per account, and a lesson about totals hiding detail.
+A backtested forecast (2013 predicted as 2012 plus the prior year's change) landed within 3.1% in total while missing many individual accounts. It is one test point per account.
 
 ![Revenue and expenditures grew every year, but on a like-for-like January to November basis the net operating margin slipped from 21.21% to 19.15%.](../images/fpa-margin-trend.png){fig-alt="Bar and line chart of revenue, expenditures and net operating margin, 2011 to 2013, with a summary table below."}
 

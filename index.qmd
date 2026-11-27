@@ -29,7 +29,7 @@ Data analyst · reconciliation, Power BI and Power Query
 [AI-assisted; I tested each one and caught a 4-years-vs-2 budget error]{.k}
 :::
 ::: {.kpi}
-**Accounting first**
+**Accounting background**
 [GAAP, monthly close, payables, ledger tie-outs]{.k}
 :::
 :::

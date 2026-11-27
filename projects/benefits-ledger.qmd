@@ -213,12 +213,6 @@ running AS (
 Full file: [r01_roll_forward.sql](../code/benefits/r01_roll_forward.sql)
 :::
 
-## What I'd tell a team
-
-- Most variances are timing. Label them, and the real errors stand out.
-- One check passing doesn't mean the month ties. Tie out more than one way.
-- Build it so someone else can run it: plain labels, tips on the page, a routine to follow.
-
 ## What the business should do
 
 In this synthetic scenario:
