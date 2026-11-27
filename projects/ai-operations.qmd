@@ -6,7 +6,7 @@ subtitle: "Governance for a team of AI agents: written rules, review gates and a
 
 ## Problem
 
-AI can build a lot fast: synthetic data, a Power BI model, Python, SQL, a website. The risk is in what it builds without being told: a real report's layout copied too closely, a personal file path left in a public repo, an old commit that still holds something you meant to remove. None of that is a code problem. It's an operations problem: who does what, under which rules, and what has to pass before anything goes out.
+AI can build a lot fast: synthetic data, a Power BI model, Python, SQL, a website. The risk is in what it builds without being told: synthetic files that look too much like real-world reports, a personal file path left in a public repo, an old commit that still holds something you meant to remove. None of that is a code problem. It's an operations problem: who does what, under which rules, and what has to pass before anything goes out.
 
 I ran my portfolio work this way. AI agents did the building and reviewing. I set the rules and the gates, and nothing went public without my yes.
 
@@ -17,7 +17,7 @@ I ran my portfolio work this way. AI agents did the building and reviewing. I se
 | Agent | Job | Can't |
 |---|---|---|
 | Builder (main session) | Writes the data, code and pages, and runs the checks | Publish, push, change settings or accept terms without my yes |
-| Employer risk panel | Reads everything as my employer's HR, compliance and external auditors would | Edit or publish |
+| Confidentiality panel | Reads everything as a company's HR, compliance team and auditors would, for anything that looks like real company data, processes, people or vendors, or is disclosed inconsistently | Edit or publish |
 | Readiness reviewers | A resume reviewer, a senior recruiter, a hiring manager and a web developer: is the portfolio ready to show? | Edit or publish |
 
 **Rules.** Written down once, loaded into every session, and applied the same way every time. A few of them:
@@ -33,7 +33,7 @@ I ran my portfolio work this way. AI agents did the building and reviewing. I se
 
 1. **Automated checks.** The work proves itself first: 13 checks against an answer key, footer totals on every file, a search for banned terms and personal paths.
 2. **Readiness review.** The resume reviewer, senior recruiter, hiring manager and web developer decide whether the work is good enough to show.
-3. **Risk review.** Once the work is ready, the employer risk panel takes over, and it gets the most use. When it disagrees with the readiness reviewers, the two sides work out one joint plan for what's actually okay to show, and I decide anything that's my call.
+3. **Risk review.** Once the work is ready, the confidentiality panel takes over, and it gets the most use. When it disagrees with the readiness reviewers, the two sides work out one joint plan for what's actually okay to show, and I decide anything that's my call.
 4. **My approval.** Then, and only then, it's pushed or published.
 
 **Enforcement.** The rules that matter most are enforced by a tool, not a reminder: a hook checks every git command before it runs and blocks careless ones, and deletes must name their paths exactly. Commits go out under a no-reply address, never a personal email.
@@ -54,19 +54,19 @@ Each entry is a rule, what happened, and what was done. It never says what the r
 ::: {.callout-note collapse="true" appearance="simple"}
 ## See all 14 catches (full log)
 
-1. **Never mirror a real report's layout.** Two synthetic vendor PDFs came out looking more like real-world reports than the rule allows. *Caught by the employer risk panel.* Both changed to a plain generic layout before anything went public.
-2. **Synthetic volumes stay away from real ones.** One synthetic file's size was flagged as possibly too realistic. *Caught by the employer risk panel.* Regenerated at a deliberately different size; every result rechecked.
-3. **No regional or identifying patterns.** The made-up surnames came from too narrow a pool. *Caught by the employer risk panel.* Replaced with a nationwide list; same random draws, so only the names changed.
-4. **Keep public notes vendor-neutral.** A database note named one vendor's product. *Caught by the employer risk panel.* Removed; the note now says "other databases have their own versions".
+1. **Never mirror a real report's layout.** Two synthetic vendor PDFs came out looking more like real-world reports than the rule allows. *Caught by the confidentiality panel.* Both changed to a plain generic layout before anything went public.
+2. **Synthetic volumes look invented.** One synthetic file's size was flagged as possibly too realistic. *Caught by the confidentiality panel.* Regenerated at a deliberately different size; every result rechecked.
+3. **No identifying patterns.** The made-up surnames came from too small a list. *Caught by the confidentiality panel.* Replaced with a nationwide list; same random draws, so only the names changed.
+4. **Keep public notes vendor-neutral.** A database note named one vendor's product. *Caught by the confidentiality panel.* Removed; the note now says "other databases have their own versions".
 5. **No personal paths in public files.** A private script was copied over the repo's version, bringing my local folder path with it. *Caught by the builder's own diff check, before commit.* Restored the repo version from git.
 6. **No personal paths in public files.** Rebuilding a model file wrote my local path into a setting. *Caught by the builder's search for my username, before commit.* Restored, and the script changed so it always writes a placeholder.
 7. **No old history goes public.** Earlier commits still held the old surnames and an old description. *Caught by joint review before going public.* Repo deleted and recreated with one clean commit; a force-push wasn't enough, since old commits stay reachable.
 8. **Commits use a no-reply address.** The repo's git settings held a personal email. *Caught by the builder, before commit.* Commit made under the no-reply address.
-9. **Disclose AI work the same way everywhere.** One page said AI "helped" with code that another said AI "wrote". *Caught by the employer risk panel.* One sentence used everywhere.
-10. **Nothing reads as a statement about an employer's controls.** Two scenario descriptions could be read as real process failures. *Caught by the employer risk panel.* Rewritten as clearly planted scenario events.
+9. **Disclose AI work the same way everywhere.** One page said AI "helped" with code that another said AI "wrote". *Caught by the confidentiality panel.* One sentence used everywhere.
+10. **Scenarios read as invented, not real.** Two scenario descriptions could have been mistaken for real-world events. *Caught by the confidentiality panel.* Rewritten as clearly planted scenario events.
 11. **Protect file integrity.** Git was about to rewrite line endings inside the PDFs, which can corrupt them. *Caught by the builder, from git's own warning.* PDFs, spreadsheets and images marked as binary before the commit.
 12. **Stay in the right account.** The command-line tool was signed in to a different account, so a push failed. *Caught by the failed push.* Switched to my own account, which I then told it to keep.
-13. **Reviewers advise; I decide.** A reviewer asked whether some counts and titles were too realistic. *Caught by the employer risk panel.* Not changed on the reviewer's word. I confirmed they were invented, then it went ahead.
+13. **Reviewers advise; I decide.** A reviewer asked whether some counts and titles were too realistic. *Caught by the confidentiality panel.* Not changed on the reviewer's word. I confirmed they were invented, then it went ahead.
 14. **Nothing public without my yes.** The site was ready to publish. *Caught at Gate 4.* Held: "Let me look first" stopped the publish.
 :::
 

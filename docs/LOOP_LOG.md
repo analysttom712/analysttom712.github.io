@@ -23,4 +23,5 @@ Totals: slices shipped 10 · average loops per slice 1.3 · repeat issues 2 (cla
 - Benefits Power BI: before any PDF export, clear slicers and size every table so it shows all rows and columns without scrolling.
 - Business sections: every recommendation quotes a figure already on its page; benefits copy always says "synthetic scenario".
 - Total Rewards refresh: when a page summarizes another repo, re-read that repo's latest README and process changes first; stale details (session length, figures) are where it drifts.
+- AI labels (#17): when a headline figure gets an AI-assisted label, pair it with what Thomas did himself in the same caption.
 - Resume request form: a page that links to another repo as proof ships only after that repo's PR is merged; check the link target's main branch, not the feature branch.
