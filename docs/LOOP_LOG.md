@@ -11,10 +11,12 @@
 | Domain-move clean-up (site-url, static pages, old-URL test) | domain-move-cleanup | 1 | 0 | none | Merged (#13) |
 | Total Rewards page refresh (Day 5 facts, CI labelled AI-built, cert path) | total-rewards-refresh | 2 | 3: "~2M rows" KPI read as done; stale "two-hour session"; Review 1 bug not tied to the study site | Claim beyond the page's proof (also in #5, #11) | Merged (#15) |
 | Where I'm headed (About: target roles, cert path) | where-im-headed | 1 | 0 (2 nice-to-haves applied: "many" not "most"; AI-assisted label on the Power BI link) | none | Merged (#16) |
-| AI-assisted labels (benefits, FP&A, Home and Projects cards; Total Rewards card tags) | benefits-ai-labels | 2 | 2: Projects meta description unlabelled; Home DAX KPI read as "AI did it" with his own catch left out | Label buried his own work (new) | In review |
+| AI-assisted labels (benefits, FP&A, Home and Projects cards; Total Rewards card tags) | benefits-ai-labels | 2 | 2: Projects meta description unlabelled; Home DAX KPI read as "AI did it" with his own catch left out | Label buried his own work (new) | Merged (#17) |
 | Resume request form (posts to the resume-request AWS service) | resume-request-form | 1 | 3: linked repo empty until resume-request PR #1 merges; "every request is deleted" overstated (owner email stays in Gmail); "I built" without "directed" | Claim beyond the page's proof (also in #5, #11, #15) | Merged (#18) after resume-request #1 and SES production access |
+| AI ops: Confidentiality panel (no employer tie-in) | ai-ops-wording | 2 | 3: "real report's layout copied" implied a real source; "stay away from real volumes" implied known real volumes; "employer's controls" pointed at an employer | Claim beyond the page's proof (also in #5, #11, #15, #18) | Merged (#19) |
+| AI ops Credits (which ideas from which talk) | ai-ops-credits | 2 | 1: credited 8 ideas, the page shows about 4 (method read as borrowed); trimmed, the rest parked in #14 | Claim beyond the page's proof (also in #5, #11, #15, #18, #19) | In review |
 
-Totals: slices shipped 10 · average loops per slice 1.3 · repeat issues 2 (claim beyond proof recurs: now 4 slices)
+Totals: slices shipped 12 · average loops per slice 1.3 · repeat issues 2 (claim beyond proof recurs: now 6 slices)
 
 ## Standardize
 - #5: new files under the repo root get published unless excluded. Check `_site/` for unexpected pages before every PR.
@@ -25,3 +27,4 @@ Totals: slices shipped 10 · average loops per slice 1.3 · repeat issues 2 (cla
 - Total Rewards refresh: when a page summarizes another repo, re-read that repo's latest README and process changes first; stale details (session length, figures) are where it drifts.
 - AI labels (#17): when a headline figure gets an AI-assisted label, pair it with what Thomas did himself in the same caption.
 - Resume request form: a page that links to another repo as proof ships only after that repo's PR is merged; check the link target's main branch, not the feature branch.
+- Claim beyond proof keeps returning: before any PR, list each claim the change adds and point to the line or artifact on the same page that proves it. Candidate for a site-checks step or a PR-template checklist.
