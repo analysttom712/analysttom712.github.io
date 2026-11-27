@@ -34,9 +34,9 @@ I ran my portfolio work this way. AI agents did the building and reviewing. I se
 1. **Automated checks.** The work proves itself first: 13 checks against an answer key, footer totals on every file, a search for banned terms and personal paths.
 2. **Readiness review.** The resume reviewer, senior recruiter, hiring manager and web developer decide whether the work is good enough to show.
 3. **Risk review.** Once the work is ready, the confidentiality panel takes over, and it gets the most use. When it disagrees with the readiness reviewers, the two sides work out one joint plan for what's actually okay to show, and I decide anything that's my call.
-4. **My approval.** Then, and only then, it's pushed or published.
+4. **My approval.** Only then is it pushed or published.
 
-**Enforcement.** The rules that matter most are enforced by a tool, not a reminder: a hook checks every git command before it runs and blocks careless ones, and deletes must name their paths exactly. Commits go out under a no-reply address, never a personal email.
+**Enforcement.** The rules that matter most are enforced by tools: a hook checks every git command before it runs and blocks careless ones, and deletes must name their paths exactly. Commits go out under a no-reply address, never a personal email.
 
 ## Decision log: what the rules caught
 
@@ -44,7 +44,7 @@ I ran my portfolio work this way. AI agents did the building and reviewing. I se
 
 Each entry is a rule, what happened, and what was done. It never says what the real thing looked like, only that the rule held.
 
-### Four catches that show the gates working
+### Selected catches
 
 - **Nothing public without my yes.** The site was ready to publish. *Held at Gate 4:* "Let me look first" stopped the publish.
 - **Reviewers advise; I decide.** A reviewer asked whether some counts and titles were too realistic. *Not changed on the reviewer's word:* I confirmed they were invented, then the work went ahead.
@@ -72,8 +72,8 @@ Each entry is a rule, what happened, and what was done. It never says what the r
 
 ## What the business should do
 
-- Write the rules and review gates before AI agents start work, and enforce the critical ones with tools (such as a hook that checks every git command), not reminders.
-- Give reviewers read-only access and keep a person on every approval. Agent advice is input, not sign-off.
+- Write the rules and review gates before AI agents start work, and enforce the critical ones with tools, such as a hook that checks every git command.
+- Give reviewers read-only access and keep a person on every approval. Agent advice goes to a person, who signs off.
 - Keep a decision log. It's the evidence the controls work, and it shows what to tighten next.
 
 ## Credits

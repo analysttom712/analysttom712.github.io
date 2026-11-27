@@ -23,7 +23,7 @@ subtitle: "A year-long, job-style build from analyst to analytics engineer: synt
 :::
 ::: {.kpi}
 **0**
-[real records, ever]{.k}
+[real records]{.k}
 :::
 :::
 
