@@ -3,10 +3,85 @@ description: "Request Thomas Baynum's one-page resume."
 title: "Resume"
 ---
 
-[Request my resume by email](mailto:thomasbaynum.dev@gmail.com?subject=Resume%20request){.btn .btn-outline-primary}
-
 **In short:** data analyst with an accounting background. I build reconciliation and reporting tools in Power BI and Power Query for my benefits team, and I treat the data behind them as confidential. One page, updated November 2026.
 
+## Request my resume
+
+Leave your name, email and company. I approve each request myself, and the resume arrives by email from resume@thomasbaynum.dev.
+
+```{=html}
+<form id="resume-request" class="resume-request" novalidate>
+  <div class="mb-3">
+    <label for="rr-name" class="form-label">Name</label>
+    <input id="rr-name" name="name" type="text" class="form-control" required maxlength="100" autocomplete="name">
+  </div>
+  <div class="mb-3">
+    <label for="rr-email" class="form-label">Email (work email preferred)</label>
+    <input id="rr-email" name="email" type="email" class="form-control" required maxlength="254" autocomplete="email">
+  </div>
+  <div class="mb-3">
+    <label for="rr-company" class="form-label">Company</label>
+    <input id="rr-company" name="company" type="text" class="form-control" required maxlength="120" autocomplete="organization">
+  </div>
+  <!-- Left empty by people; bots that fill every field are dropped. -->
+  <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden">
+    <label for="rr-website">Website</label>
+    <input id="rr-website" name="website" type="text" tabindex="-1" autocomplete="off">
+  </div>
+  <button type="submit" class="btn btn-outline-primary">Request resume</button>
+  <p id="rr-status" class="mt-3" role="status" aria-live="polite"></p>
+</form>
+<script>
+(function () {
+  var form = document.getElementById("resume-request");
+  var status = document.getElementById("rr-status");
+  var endpoint = "https://soqt2j6qx1.execute-api.us-east-2.amazonaws.com/request";
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    var button = form.querySelector("button");
+    button.disabled = true;
+    status.textContent = "Sending…";
+    var data = {};
+    ["name", "email", "company", "website"].forEach(function (field) {
+      data[field] = form.elements[field].value;
+    });
+    fetch(endpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data)
+    })
+      .then(function (response) {
+        return response.json().then(function (body) {
+          return { ok: response.ok, body: body };
+        });
+      })
+      .then(function (result) {
+        status.textContent = result.body.message || (result.ok ? "Request sent." : "Something went wrong.");
+        if (result.ok) {
+          form.reset();
+        } else {
+          button.disabled = false;
+        }
+      })
+      .catch(function () {
+        status.textContent = "The request couldn't be sent. Please email or message me on LinkedIn instead.";
+        button.disabled = false;
+      });
+  });
+})();
+</script>
+```
+
+```{=html}
+<noscript><p>The form needs JavaScript. Please use the email link below instead.</p></noscript>
+```
+
 ::: {.callout-note appearance="simple"}
-**How to get it.** Send a short note with your name and company and I'll email you my resume. You can also [reach out on LinkedIn](https://www.linkedin.com/in/thomas-baynumacct).
+**Other ways to reach me.** [Email me](mailto:thomasbaynum.dev@gmail.com?subject=Resume%20request) with your name and company, or [message me on LinkedIn](https://www.linkedin.com/in/thomas-baynumacct).
+
+**How the form works.** It runs on a small AWS service I designed and directed, built with AI assistance (Claude Code): requests wait for my approval, the resume is then emailed automatically, and stored requests are deleted after 30 days. [Source, tests and design notes on GitHub](https://github.com/analysttom712/resume-request).
 :::
