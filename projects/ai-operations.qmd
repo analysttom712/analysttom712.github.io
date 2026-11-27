@@ -78,7 +78,10 @@ Each entry is a rule, what happened, and what was done. It never says what the r
 
 ## Credits
 
-I adapted ideas from Matt Pocock's [AI engineering workshop](https://youtu.be/-QFHIoCo-Ko) and Lydia Hallie's [Rethinking Claude Code Best Practices](https://youtu.be/vlfCjWuv4es).
+I adapted ideas from two talks:
+
+- Matt Pocock's [AI engineering workshop](https://youtu.be/-QFHIoCo-Ko): give the AI fast checks it runs on every change, and keep a person on every approval.
+- Lydia Hallie's [Rethinking Claude Code Best Practices](https://youtu.be/vlfCjWuv4es): give each agent one job, and enforce critical rules with tools instead of wording.
 
 ## Tools
 
