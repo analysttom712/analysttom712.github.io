@@ -1,5 +1,5 @@
 ---
-description: "Portfolio projects on synthetic and public sample data: reconciliation in Power BI, Python and SQL, a Total Rewards analytics platform in progress, FP&A variance and AI operations."
+description: "Portfolio projects on synthetic and public sample data: reconciliation in Power BI, with AI-assisted Python and SQL, a Total Rewards analytics platform in progress, FP&A variance and AI operations."
 title: "Projects"
 ---
 
@@ -12,13 +12,13 @@ Every project is built from scratch as a portfolio exercise, on invented data or
 ### [Benefits receivables reconciliation](projects/benefits-ledger.qmd)
 Billing, three payment channels, a payment log and the ledger, tied out monthly, with every difference given a cause. The same reconciliation is checked again in Python and SQL from the vendor PDFs, with matching by SSN last 4 and 13 automated checks.
 
-[Power BI]{.tag} [DAX]{.tag} [Python (AI-assisted)]{.tag} [SQL]{.tag}
+[Power BI]{.tag} [DAX, SQL and Python (AI-assisted)]{.tag}
 :::
 ::: {.card-p}
 ### [Total Rewards analytics platform](projects/total-rewards-platform.qmd)
 In progress. A year-long build in public: synthetic HR, payroll and benefits data from raw extracts to dbt-tested models to Power BI, run like a job with tickets, reviews and incident drills.
 
-[Python (learning)]{.tag} [dbt]{.tag} [SQL]{.tag} [Power BI]{.tag} [AWS]{.tag}
+[Python, pandas, pytest (learning)]{.tag} [SQL (fundamentals)]{.tag} [GitHub Actions (AI-built)]{.tag} [Power BI (planned here)]{.tag} [dbt (planned)]{.tag} [AWS (planned)]{.tag}
 :::
 ::: {.card-p}
 ### [AI operations and enablement](projects/ai-operations.qmd)
@@ -30,6 +30,6 @@ How I run AI agents as a team: one job per agent, read-only reviewers, four gate
 ### [FP&A variance and forecast](projects/fpa-variance.qmd)
 Actual versus budget and a run rate forecast on Microsoft's AdventureWorks sample.
 
-[SQL Server]{.tag} [Power BI]{.tag} [DAX]{.tag}
+[SQL Server]{.tag} [Power BI]{.tag} [SQL and DAX (AI-assisted)]{.tag}
 :::
 :::

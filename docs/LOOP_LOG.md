@@ -10,9 +10,10 @@
 | Resume request (interim) and About facts | resume-request-interim | 1 | 0 | none | Merged (#12) |
 | Domain-move clean-up (site-url, static pages, old-URL test) | domain-move-cleanup | 1 | 0 | none | Merged (#13) |
 | Total Rewards page refresh (Day 5 facts, CI labelled AI-built, cert path) | total-rewards-refresh | 2 | 3: "~2M rows" KPI read as done; stale "two-hour session"; Review 1 bug not tied to the study site | Claim beyond the page's proof (also in #5, #11) | Merged (#15) |
-| Where I'm headed (About: target roles, cert path) | where-im-headed | 1 | 0 (2 nice-to-haves applied: "many" not "most"; AI-assisted label on the Power BI link) | none | In review |
+| Where I'm headed (About: target roles, cert path) | where-im-headed | 1 | 0 (2 nice-to-haves applied: "many" not "most"; AI-assisted label on the Power BI link) | none | Merged (#16) |
+| AI-assisted labels (benefits, FP&A, Home and Projects cards; Total Rewards card tags) | benefits-ai-labels | 2 | 2: Projects meta description unlabelled; Home DAX KPI read as "AI did it" with his own catch left out | Label buried his own work (new) | In review |
 
-Totals: slices shipped 8 · average loops per slice 1.3 · repeat issues 2
+Totals: slices shipped 9 · average loops per slice 1.3 · repeat issues 2
 
 ## Standardize
 - #5: new files under the repo root get published unless excluded. Check `_site/` for unexpected pages before every PR.
