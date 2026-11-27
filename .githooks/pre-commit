@@ -1,0 +1,25 @@
+#!/bin/sh
+# Runs before every commit in this repo, by anyone (Thomas, Claude, an IDE).
+# Blocks the commit if the public-repo scan finds something, or can't run.
+# One-time setup per clone:  git config core.hooksPath .githooks
+# Blocklist words go in .scan-blocklist.local.txt (gitignored), one per line.
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+if [ -x .venv/Scripts/python.exe ]; then PY=.venv/Scripts/python.exe
+elif [ -x .venv/bin/python ]; then PY=.venv/bin/python
+elif command -v python >/dev/null 2>&1; then PY=python
+elif command -v python3 >/dev/null 2>&1; then PY=python3
+else
+  echo "pre-commit: no Python found, so the scan can't run. Commit blocked."
+  exit 1
+fi
+
+if [ ! -f .scan-blocklist.local.txt ]; then
+  echo "pre-commit: .scan-blocklist.local.txt is missing, so names are not checked locally (CI still checks them)."
+fi
+
+"$PY" -I scripts/public_scan.py || {
+  echo "pre-commit: commit blocked by the public-repo scan (see above)."
+  exit 1
+}
