@@ -8,9 +8,10 @@
 | Benefits Power BI section (video, 3 report pages, 77 measures) | benefits-powerbi-section | 2 | Loop 1: Tie-outs exported with a month filter, Person detail with no person, Share of Impact at 100% on every row (filter not cleared on Next Step), truncated headline. Loop 2: cut-off tables on Roll-forward, Exceptions, Outstanding balances; Why this month not sorted, total vs headline mismatch | Cut-off visuals in PDF export (several pages, both loops) | Merged (#9); 4 pages held for Desktop fixes |
 | What the business should do (all four projects) | business-should-do | 1 | 3: AI ops line named scans and CI the page doesn't show; benefits read as advice to a real employer (no "synthetic scenario" lead-in); "both end in refunds" not on the page | Claim beyond the page's proof (also in #5) | Merged (#11) |
 | Resume request (interim) and About facts | resume-request-interim | 1 | 0 | none | Merged (#12) |
-| Domain-move clean-up (site-url, static pages, old-URL test) | domain-move-cleanup | 1 | 0 | none | In review |
+| Domain-move clean-up (site-url, static pages, old-URL test) | domain-move-cleanup | 1 | 0 | none | Merged (#13) |
+| Total Rewards page refresh (Day 5 facts, CI labelled AI-built, cert path) | total-rewards-refresh | 2 | 3: "~2M rows" KPI read as done; stale "two-hour session"; Review 1 bug not tied to the study site | Claim beyond the page's proof (also in #5, #11) | In review |
 
-Totals: slices shipped 6 · average loops per slice 1.2 · repeat issues 2
+Totals: slices shipped 7 · average loops per slice 1.3 · repeat issues 2
 
 ## Standardize
 - #5: new files under the repo root get published unless excluded. Check `_site/` for unexpected pages before every PR.

@@ -14,12 +14,12 @@ subtitle: "A year-long, job-style build from analyst to analytics engineer: synt
 [business questions it's being built to answer]{.k}
 :::
 ::: {.kpi}
-**~2M rows**
-[target for the data generator, all synthetic]{.k}
+**25**
+[fictional employees generated and tested so far (target: ~2M rows)]{.k}
 :::
 ::: {.kpi}
-**9 milestones**
-[from setup to a public demo]{.k}
+**3 tests**
+[[run in CI on every pull request](https://github.com/analysttom712/total-rewards-analytics/blob/main/tests/test_generator.py)]{.k}
 :::
 ::: {.kpi}
 **0**
@@ -41,19 +41,24 @@ The company, people and pay are invented. Northwind Mutual is fictional, and eve
 
 **Planned pipeline:** HCM-style extract files and a mock API → Python ingestion → AWS S3, Glue and Athena → dbt models with automated data-quality tests → Power BI.
 
-The generator is planned to reach about 2 million rows: hires, terms, rehires, retirees, salary history, benefit elections, payroll, 401(k), PTO and general ledger entries, with planted errors and an answer key to check them against. Today it creates one reproducible employee.
+The generator is planned to reach about 2 million rows: hires, terms, rehires, retirees, salary history, benefit elections, payroll, 401(k), PTO and general ledger entries, with planted errors and an answer key to check them against.
 
-[Python (learning)]{.tag} [SQL]{.tag} [dbt]{.tag} [Power BI]{.tag} [AWS]{.tag} [GitHub Actions]{.tag}
+**Built so far (Day 5):** a seeded generator that creates 25 fictional employees, each with a unique ID, a job from a [5-job catalog](https://github.com/analysttom712/total-rewards-analytics/blob/main/generator/job_catalog.py) and a salary inside that job's pay band, written to CSV with pandas. Three [pytest tests](https://github.com/analysttom712/total-rewards-analytics/blob/main/tests/test_generator.py) check that the output is reproducible, the employee IDs are unique and every salary sits inside its band. These are the same two checks I run on any census file before trusting it: no duplicate IDs, nobody paid outside their band.
+
+**Guardrails:** [CI](https://github.com/analysttom712/total-rewards-analytics/blob/main/.github/workflows/checks.yml) runs a public-repo safety scan, ruff and pytest on every pull request, and a pre-commit hook runs the same scan before anything is committed. Claude built the CI and the scan (AI-assisted); learning to build CI myself is a later milestone.
+
+[Python, pandas, pytest (learning)]{.tag} [SQL (fundamentals)]{.tag} [GitHub Actions (AI-built)]{.tag} [Power BI (planned here)]{.tag} [dbt (planned)]{.tag} [AWS (planned)]{.tag}
 
 ## How it's run
 
-I run it like a job on an agile team. Unlike my other projects, where AI wrote the code at my direction, here I write the code myself to learn it. Claude (AI) acts as my lead engineer: it writes the tickets and setup files, teaches each concept, gives hints and reviews my pull requests.
+I run it like a job on an agile team. Unlike my other projects, where AI wrote the code at my direction, here I write the first attempt myself, with hints and, when stuck, partial code, to learn it. Claude (AI) acts as my lead engineer: it writes the tickets and setup files, teaches each concept, gives hints and reviews my pull requests.
 
 | Team practice | How it shows up here |
 |---|---|
 | Backlog | GitHub Issues written as business asks, with acceptance criteria, a learning objective and an estimate |
-| Daily standup | Each two-hour session opens with yesterday, today's ticket and blockers |
+| Daily standup | Each session opens with yesterday, today's ticket and blockers |
 | Definition of done | Checks pass, safety scan, pull request reviewed and merged, learning log updated, post drafted |
+| Decision records | [ADR-001 to ADR-004](https://github.com/analysttom712/total-rewards-analytics/blob/main/docs/DECISIONS.md): job catalog as a constant, synthetic ID rules, rules enforced by tools instead of wording, one save at a time behind a lock |
 | Sprints | Planned: two-week reviews: what shipped, skills update, next stretch goal |
 | Incidents | Starting in M1: planned drills: the pipeline is broken on purpose; I troubleshoot, write a blameless postmortem and add a test that would have caught it |
 
@@ -62,11 +67,11 @@ I run it like a job on an agile team. Unlike my other projects, where AI wrote t
 | Milestone | Focus | Build status | Certification exam |
 |---|---|---|---|
 | M0 | Git, GitHub, project setup | Done | |
-| M1 | Python data generator | In progress | GitHub Foundations: planned |
+| M1 | Python data generator | In progress | GitHub Foundations (GH-900): in progress |
 | M2 | SQL for analytics engineering | Planned | |
 | M3 | dbt models, tests, snapshots | Planned | |
-| M4 | Power BI model and dashboards, row-level security | Planned | PL-300: planned |
-| M5 | CI with GitHub Actions | Planned | |
+| M4 | Power BI model and dashboards, row-level security | Planned | PL-300: in progress |
+| M5 | CI with GitHub Actions | CI already runs (built by Claude); my own CI work planned | |
 | M6 | AWS: S3, Glue, Athena, Lambda | Planned | AWS Cloud Practitioner: planned |
 | M7 | Incremental loads, PySpark | Planned | DP-600 (optional): planned |
 | M8 | Polish, demo, interview prep | Planned | dbt Analytics Engineering: planned |
@@ -77,7 +82,13 @@ Screenshots are added as each milestone ships, starting with the dbt lineage gra
 
 | Date | What shipped |
 |---|---|
-| Nov 22, 2026 | **Day 1.** Repo, folder structure and Python environment set up; first script generates a reproducible fake employee. [Day 1 commit](https://github.com/analysttom712/total-rewards-analytics/commit/4922489) |
+| Nov 22, 2026 | **Day 1.** Repo, folder structure and Python environment set up; first script generates a reproducible fake employee. [Commit](https://github.com/analysttom712/total-rewards-analytics/commit/4922489) · [Post](https://github.com/analysttom712/total-rewards-analytics/blob/main/docs/blog/2026-11-22-day-001.md) |
+| Nov 23, 2026 | **Day 2.** A 5-job catalog with grades and pay bands; each employee gets a job and a salary inside its band. Found that moving one line changes every seeded value after it. [Pull request](https://github.com/analysttom712/total-rewards-analytics/pull/5) · [Post](https://github.com/analysttom712/total-rewards-analytics/blob/main/docs/blog/2026-11-23-day-002.md) |
+| Nov 24, 2026 | **Day 3.** The script became a function; 25 employees go into a pandas DataFrame and out to CSV. [Pull request](https://github.com/analysttom712/total-rewards-analytics/pull/11) · [Post](https://github.com/analysttom712/total-rewards-analytics/blob/main/docs/blog/2026-11-24-day-003.md) |
+| Nov 25, 2026 | **Review 1.** Reviewed two Claude-built pull requests as the lead. Claude's review found a lost update in the repo's local study site: of 20 saves sent at once, only 1 or 2 survived. Fixed with a lock before merging and recorded as ADR-004. [Pull request](https://github.com/analysttom712/total-rewards-analytics/pull/33) · [Post](https://github.com/analysttom712/total-rewards-analytics/blob/main/docs/blog/2026-11-25-review-1.md) |
+| Nov 26, 2026 | **Day 5.** Tests for unique employee IDs and salaries inside their pay band; broke one on purpose to watch it fail. [Pull request](https://github.com/analysttom712/total-rewards-analytics/pull/35) · [Post](https://github.com/analysttom712/total-rewards-analytics/blob/main/docs/blog/2026-11-26-day-005.md) |
+
+Posts are drafted by Claude from my session notes, and I edit them before they go out.
 
 ## Why I'm building it
 
